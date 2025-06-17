@@ -1,0 +1,2 @@
+# MediRural
+COLLEGE PROJECT
