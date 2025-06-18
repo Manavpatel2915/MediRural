@@ -41,13 +41,29 @@ app.get('/medicines', async (req, res) => {
     try {
         
         const medicines = await Medicine.find();
-        console.log('Medicines found:', medicines);
+        
         res.json(medicines);
     } catch (error) {
         console.error('Error fetching medicines:', error);
         res.status(500).json({ message: error.message });
     }
 });
+
+// single medicine route
+app.get('/medicines/:id', async (req, res) => {
+    try {
+        const medicine = await Medicine.findById(req.params.id);
+        if (!medicine) {
+            return res.status(404).json({ message: 'Medicine not found' });
+        }
+        res.json(medicine);
+    } catch (error) {
+        console.error('Error fetching medicine:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);

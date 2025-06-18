@@ -1,12 +1,25 @@
 import React from 'react';
 import AllMedicines from './components/AllMedicines.jsx';
+import Navbar from './components/Navbar.jsx';
+import { Box } from '@mui/material';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <AllMedicines />
-    </div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Navbar />
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1,
+          py: 3,
+          mt: 2, // Add margin top to account for fixed navbar
+          width: '100%'
+        }}
+      >
+        <AllMedicines />
+      </Box>
+    </Box>
   );
 }
 
