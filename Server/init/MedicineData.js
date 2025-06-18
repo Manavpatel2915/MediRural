@@ -20,7 +20,7 @@ const medicineData = [
         manufacturer: "Sun Pharma",
         expiryDate: new Date("2025-06-30"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/amoxicillin-white-medical-pills-tablets-spilling-2173885023",
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW50aWJpb3RpY3xlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -32,7 +32,7 @@ const medicineData = [
         manufacturer: "Glenmark",
         expiryDate: new Date("2025-08-31"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/cetirizin-sandoz-10-mg-dihydrochlorid-allergy-1067828777",
+        imageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YWxsZXJneSUyMG1lZGljaW5lfGVufDB8fDB8fHww",
         isActive: true
     },
     {
@@ -44,7 +44,7 @@ const medicineData = [
         manufacturer: "Torrent",
         expiryDate: new Date("2025-07-31"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/playa-blanca-lanzarote-spain-april-25th-189519179",
+        imageUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3RvbWFjaCUyMG1lZGljaW5lfGVufDB8fDB8fHww",
         isActive: true
     },
     {
@@ -56,7 +56,7 @@ const medicineData = [
         manufacturer: "Electral",
         expiryDate: new Date("2025-12-31"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/electrolyte-ors-medicine-packed-sachets-different-1868337553",
+        imageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Zmlyc3QlMjBhaWR8ZW58MHx8MHx8fDA%3D",
         isActive: true
     },
     {
@@ -68,7 +68,7 @@ const medicineData = [
         manufacturer: "Himalaya",
         expiryDate: new Date("2025-10-31"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/manchester-england-october-31st-2024-box-2540249353",
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aXJvbiUyMHRhYmxldHN8ZW58MHx8MHx8fDA%3D",
         isActive: true
     },
     {
@@ -80,7 +80,7 @@ const medicineData = [
         manufacturer: "Lupin",
         expiryDate: new Date("2025-05-31"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/cairo-egypt-october-15-2023-azithromycin-2375787829",
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW50aWJpb3RpYyUyMHBpbGxzfGVufDB8fDB8fHww",
         isActive: true
     },
     {
@@ -92,7 +92,7 @@ const medicineData = [
         manufacturer: "HealthVit",
         expiryDate: new Date("2025-11-30"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/melbourne-vicaustraliasept-20th-2019-bottle-ostelin-1510014113",
+        imageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dml0YW1pbiUyMGQzJTIwdGFibGV0c3xlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -104,7 +104,7 @@ const medicineData = [
         manufacturer: "Cadila",
         expiryDate: new Date("2025-08-31"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/vancouver-canada-august-8-2024-amlodipine-2502936831",
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Ymxvb2QlMjBwcmVzc3VyZSUyMG1lZGljaW5lfGVufDB8fDB8fHww",
         isActive: true
     },
     {
@@ -116,7 +116,7 @@ const medicineData = [
         manufacturer: "Volini",
         expiryDate: new Date("2025-07-31"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/chonburi-thailandaugust-9-2018-voltaren-emulgel-1217997172",
+        imageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGFpbiUyMHJlbGllZiUyMGdlbHxlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -128,7 +128,7 @@ const medicineData = [
         manufacturer: "Alkem",
         expiryDate: new Date("2025-09-30"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/metronidazole-medical-liquid-injection-glass-vial-2152504671",
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWV0cm9uaWRhem9sZXxlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -140,7 +140,7 @@ const medicineData = [
         manufacturer: "Bayer",
         expiryDate: new Date("2025-10-31"),
         prescriptionRequired: false,
-        imageUrl:"https://www.shutterstock.com/image-photo/aspirin-pills-transparent-bottle-labeled-100-2560672303",
+        imageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXNwaXJpbiUyMHBpbGxzfGVufDB8fDB8fHww",
         isActive: true
     },
     {
@@ -152,7 +152,7 @@ const medicineData = [
         manufacturer: "Calcium Sandoz",
         expiryDate: new Date("2025-11-30"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/2403-lviv-ukraine-bottle-vitamin-d3-2607444831",
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FsY2l1bSUyMHRhYmxldHN8ZW58MHx8MHx8fDA%3D",
         isActive: true
     },
     {
@@ -164,7 +164,7 @@ const medicineData = [
         manufacturer: "Cipla",
         expiryDate: new Date("2025-08-31"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/irvine-scotland-uk-june-17-2024-2492280287",
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2lwcm9mbG94YWNpbnxlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -176,7 +176,7 @@ const medicineData = [
         manufacturer: "Zydus",
         expiryDate: new Date("2025-09-30"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/nurse-preparing-medical-treatment-dexamethasone-vial-1819520408",
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGV4YW1ldGhhc29uZXxlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -188,7 +188,7 @@ const medicineData = [
         manufacturer: "Himalaya",
         expiryDate: new Date("2025-12-31"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/cairo-egypt-december-2-2024-folic-2553235185",
+        imageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Zm9saWMlMjBhY2lkJTIwdGFibGV0c3xlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -200,7 +200,7 @@ const medicineData = [
         manufacturer: "Glenmark",
         expiryDate: new Date("2025-12-31"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/hydrocortisone-cream-medical-tube-closeup-2152504671",
+        imageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHlkcm9jb3J0aXNvbmUlMjBjcmVhbXxlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -212,7 +212,7 @@ const medicineData = [
         manufacturer: "Cipla",
         expiryDate: new Date("2025-10-31"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/southminster-essex-06122020-box-84-ibuprofen-1754924603",
+        imageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aWJ1cHJvZmVuJTIwcGlsbHN8ZW58MHx8MHx8fDA%3D",
         isActive: true
     },
     {
@@ -224,7 +224,7 @@ const medicineData = [
         manufacturer: "HealthVit",
         expiryDate: new Date("2025-11-30"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/multicolored-medical-pills-female-hands-side-2362447447",
+        imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bXVsdGl2aXRhbWluJTIwdGFibGV0c3xlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -236,7 +236,7 @@ const medicineData = [
         manufacturer: "Sun Pharma",
         expiryDate: new Date("2025-08-31"),
         prescriptionRequired: false,
-        imageUrl: "https://www.shutterstock.com/image-photo/ranitidine-histamine2-h2-receptor-antagonist-gerd-2298660191",
+        imageUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmFuaXRpZGluZXxlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     },
     {
@@ -248,7 +248,7 @@ const medicineData = [
         manufacturer: "Cipla",
         expiryDate: new Date("2025-09-30"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/male-hand-pressing-his-bronchodilator-medicine-1821074570",
+        imageUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW5oYWxlcnxlbnwwfHwwfHx8MA%3D%3D",
         isActive: true
     }
 ];
