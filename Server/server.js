@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const Medicine = require('./models/MedicineModel');
+const orderRoutes = require('./routes/orderRoutes');
+
 // Load environment variables
 dotenv.config();
 
@@ -29,6 +31,14 @@ mongoose.connect(MONGODB_URI)
         console.error('Error connecting to MongoDB:', error.message);
         process.exit(1);
     });
+
+
+//routes definations
+app.use('/api/orders', orderRoutes);
+
+
+
+
 
 // Home Route
 app.get('/', (req, res) => {

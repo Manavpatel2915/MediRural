@@ -13,6 +13,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<AllMedicines />} />
+          <Route path='/medicines' element={<AllMedicines />} />
           <Route path="/medicine/:id" element={<SingleMedicine />} />
         </Routes>
       </Box>

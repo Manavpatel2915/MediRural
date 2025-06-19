@@ -44,7 +44,10 @@ const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
 
 const StyledButton = styled(Button)(({ theme }) => ({
     borderRadius: '10px',
-    padding: '12px 24px',
+    padding: {
+        xs: '8px 16px',
+        md: '12px 24px',
+    },
     fontWeight: 600,
     textTransform: 'none',
     fontSize: '1rem',
@@ -83,7 +86,7 @@ export default function SingleMedicine() {
     }, [id]);
 
     const handleBack = () => {
-        navigate('/');
+        navigate('/medicines');
     };
 
     if (loading) {
@@ -201,8 +204,8 @@ export default function SingleMedicine() {
                                 <StyledButton
                                     variant="contained"
                                     color="primary"
-                                    fullWidth
                                     disabled={medicine.stock === 0}
+                                    
                                 >
                                     Add to Cart
                                 </StyledButton>
