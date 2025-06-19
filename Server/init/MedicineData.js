@@ -20,7 +20,9 @@ const medicineData = [
         manufacturer: "Sun Pharma",
         expiryDate: new Date("2025-06-30"),
         prescriptionRequired: true,
+
         imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW50aWJpb3RpY3xlbnwwfHwwfHx8MA%3D%3D",
+
         isActive: true
     },
     {

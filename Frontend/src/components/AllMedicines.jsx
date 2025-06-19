@@ -17,6 +17,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import SingleMedicine from './singleMedicine.jsx';
+
 // Styled components for enhanced UI
 const StyledCard = styled(Card)(({ theme }) => ({
     height: '420px', // Fixed height for consistency
@@ -78,6 +80,9 @@ export default function AllMedicines() {
     const [medicines, setMedicines] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showAddMedicine, setShowAddMedicine] = useState(false);
+    const [selectedMedicine, setSelectedMedicine] = useState(null);
+    const [singleLoading, setSingleLoading] = useState(false);
 
     useEffect(() => {
         const fetchMedicines = async () => {
@@ -94,6 +99,28 @@ export default function AllMedicines() {
         fetchMedicines();
     }, []);
 
+    // Handler for clicking on a medicine image
+    const handleImageClick = async (id) => {
+        setSingleLoading(true);
+        try {
+            const response = await axios.get(`http://localhost:5000/medicines/${id}`);
+            setSelectedMedicine(response.data);
+        } catch (err) {
+            alert('Error fetching medicine details');
+        } finally {
+            setSingleLoading(false);
+        }
+    };
+
+    const handleAddMedicine = () => {
+        setShowAddMedicine(true);
+        console.log('Add Medicine button clicked');
+    };
+
+    const handleBack = () => {
+        setSelectedMedicine(null);
+    };
+
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
@@ -108,6 +135,18 @@ export default function AllMedicines() {
                 <Typography color="error" variant="h6">{error}</Typography>
             </Box>
         );
+    }
+
+    if (singleLoading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (selectedMedicine) {
+        return <SingleMedicine medicine={selectedMedicine} onBack={handleBack} />;
     }
 
     return (
@@ -159,6 +198,10 @@ export default function AllMedicines() {
                                         component="img"
                                         image={medicine.imageUrl}
                                         alt={medicine.name}
+
+                                        sx={{ cursor: 'pointer' }}
+                                        onClick={() => handleImageClick(medicine._id)}
+
                                     />
                                     
                                     <CardContent sx={{ 
