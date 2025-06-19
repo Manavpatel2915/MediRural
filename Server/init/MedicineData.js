@@ -20,7 +20,7 @@ const medicineData = [
         manufacturer: "Sun Pharma",
         expiryDate: new Date("2025-06-30"),
         prescriptionRequired: true,
-        imageUrl: "https://www.shutterstock.com/image-photo/amoxicillin-white-medical-pills-tablets-spilling-2173885023",
+        imageUrl: "https://media.istockphoto.com/id/2215337200/photo/liquid-amoxicillin-bottle-for-children.jpg?s=1024x1024&w=is&k=20&c=XC5kqo8Bc7yJSmph0Z6i1VyGmXUsEmsy3AIz6x5816E=",
         isActive: true
     },
     {

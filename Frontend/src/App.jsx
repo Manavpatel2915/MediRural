@@ -13,7 +13,7 @@ function App() {
         sx={{ 
           flexGrow: 1,
           py: 3,
-          mt: 2, // Add margin top to account for fixed navbar
+          mt: 2, 
           width: '100%'
         }}
       >
