@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { motion } from "motion/react"
+import { AnimatePresence } from "motion/react"
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -59,19 +61,46 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-blue-600 shadow-lg z-50">
-            <div className="flex flex-col py-4">
-              <div className='px-6 py-3 flex flex-col gap-5'>
-                <Link to="/" className="text-white no-underline font-medium hover:text-blue-100 transition-colors">Home</Link>
-                <Link to="/medicines" className="text-white no-underline font-medium hover:text-blue-100 transition-colors">Medicines</Link>
-                <Link to="/about" className="text-white no-underline font-medium hover:text-blue-100 transition-colors">About</Link>
-                <Link to="/contact" className="text-white no-underline font-medium hover:text-blue-100 transition-colors">Contact</Link>
-              </div>
-
-            </div>
+        <AnimatePresence>
+      {isMenuOpen && (
+        <motion.div
+          key="mobile-menu"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.35, ease: "easeInOut" }}
+          className="md:hidden absolute top-full left-2 right-2 mt-2 bg-blue-600/60 backdrop-blur-md rounded-xl shadow-2xl z-50 "
+        >
+          <div className="flex flex-col px-6 py-5 gap-4">
+            <Link
+              to="/"
+              className="text-white font-semibold text-lg hover:text-blue-200 transition duration-200"
+            >
+              Home
+            </Link>
+            <Link
+              to="/medicines"
+              className="text-white font-semibold text-lg hover:text-blue-200 transition duration-200"
+            >
+              Medicines
+            </Link>
+            <Link
+              to="/about"
+              className="text-white font-semibold text-lg hover:text-blue-200 transition duration-200"
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              className="text-white font-semibold text-lg hover:text-blue-200 transition duration-200"
+            >
+              Contact
+            </Link>
           </div>
-        )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+
       </nav>
     </div>
   )
