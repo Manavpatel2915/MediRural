@@ -14,20 +14,20 @@ import {
     Box,
     CircularProgress
 } from '@mui/material';
+import SingleMedicine from './singleMedicine';
 
 export default function AllMedicines() {
     const [medicines, setMedicines] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showAddMedicine, setShowAddMedicine] = useState(false);
+    const [selectedMedicine, setSelectedMedicine] = useState(null);
 
     useEffect(() => {
         const fetchMedicines = async () => {
             try {
                 const response = await axios.get('http://localhost:5000/medicines');
                 setMedicines(response.data);
-                // Log all medicine IDs for debugging 
-                console.log('Medicine IDs:', response.data.map(m => m._id));
                 setLoading(false);
             } catch (err) {
                 setError('Error fetching medicines: ' + err.message);
@@ -42,7 +42,7 @@ export default function AllMedicines() {
     const handleImageClick = async (id) => {
         try {
             const response = await axios.get(`http://localhost:5000/medicines/${id}`);
-            alert(`Fetched: ${response.data.name}`);
+            setSelectedMedicine(response.data);
         } catch (err) {
             alert('Error fetching medicine details');
         }
@@ -67,6 +67,10 @@ export default function AllMedicines() {
                 <Typography color="error">{error}</Typography>
             </Box>
         );
+    }
+
+    if (selectedMedicine) {
+        return <SingleMedicine medicine={selectedMedicine} />;
     }
 
     return (
