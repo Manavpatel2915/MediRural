@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
     Container,
@@ -16,8 +17,6 @@ import {
     Fade
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-
-import SingleMedicine from './singleMedicine.jsx';
 
 // Styled components for enhanced UI
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -80,9 +79,7 @@ export default function AllMedicines() {
     const [medicines, setMedicines] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showAddMedicine, setShowAddMedicine] = useState(false);
-    const [selectedMedicine, setSelectedMedicine] = useState(null);
-    const [singleLoading, setSingleLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchMedicines = async () => {
@@ -99,32 +96,14 @@ export default function AllMedicines() {
         fetchMedicines();
     }, []);
 
-    // Handler for clicking on a medicine image
-    const handleImageClick = async (id) => {
-        setSingleLoading(true);
-        try {
-            const response = await axios.get(`http://localhost:5000/medicines/${id}`);
-            setSelectedMedicine(response.data);
-        } catch (err) {
-            alert('Error fetching medicine details');
-        } finally {
-            setSingleLoading(false);
-        }
-    };
-
-    const handleAddMedicine = () => {
-        setShowAddMedicine(true);
-        console.log('Add Medicine button clicked');
-    };
-
-    const handleBack = () => {
-        setSelectedMedicine(null);
+    const handleViewDetails = (id) => {
+        navigate(`/medicine/${id}`);
     };
 
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress size={40} />
+                <CircularProgress size={40} thickness={4} />
             </Box>
         );
     }
@@ -137,59 +116,50 @@ export default function AllMedicines() {
         );
     }
 
-    if (singleLoading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
-            </Box>
-        );
-    }
-
-    if (selectedMedicine) {
-        return <SingleMedicine medicine={selectedMedicine} onBack={handleBack} />;
-    }
-
     return (
         <Box sx={{ 
             backgroundColor: '#fafbfc', 
             minHeight: '100vh', 
-            py: { xs: 2, md: 3 }
+            py: { xs: 3, md: 4 }
         }}>
-            <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
+            <Container maxWidth="xl">
                 <Paper 
                     elevation={0} 
                     sx={{ 
-                        p: { xs: 1.5, sm: 2, md: 3 }, 
-                        mb: { xs: 2, md: 3 }, 
-                        mx: { xs: 0.5, sm: 0 },
-                        borderRadius: '12px', 
+                        p: { xs: 2, md: 4 }, 
+                        mb: 4, 
+                        borderRadius: '20px', 
                         backgroundColor: 'white',
                         textAlign: 'center',
-                        border: '1px solid rgba(0, 0, 0, 0.06)'
+                        border: '1px solid rgba(0, 0, 0, 0.08)'
                     }}
                 >
                     <Typography 
-                        variant="h4" 
+                        variant="h3" 
                         component="h1" 
                         sx={{ 
-                            fontWeight: 600, 
-                            color: '#1a202c',
-                            mb: 0.5,
-                            fontSize: { xs: '1.75rem', md: '2.125rem' }
+                            fontWeight: 700, 
+                            color: '#1a365d',
+                            mb: 2,
+                            fontSize: { xs: '2rem', md: '2.5rem' }
                         }}
                     >
                         Medicine Catalog
                     </Typography>
                     <Typography 
-                        variant="body1" 
+                        variant="h6" 
                         color="text.secondary" 
-                        sx={{ maxWidth: '500px', mx: 'auto' }}
+                        sx={{ 
+                            maxWidth: '700px', 
+                            mx: 'auto',
+                            fontSize: { xs: '1rem', md: '1.25rem' }
+                        }}
                     >
-                        Browse our complete collection of quality medicines
+                        Browse our complete collection of high-quality medicines
                     </Typography>
                 </Paper>
                 
-                <Grid container spacing={{ xs: 1.5, sm: 2, md: 2.5 }}>
+                <Grid container spacing={{ xs: 2, md: 3 }}>
                     {medicines.map((medicine, index) => (
                         <Grid item key={medicine._id} xs={12} sm={6} md={4} lg={3}>
                             <Fade in={true} timeout={300 + index * 50}>
@@ -198,41 +168,25 @@ export default function AllMedicines() {
                                         component="img"
                                         image={medicine.imageUrl}
                                         alt={medicine.name}
-
+                                        onClick={() => handleViewDetails(medicine._id)}
                                         sx={{ cursor: 'pointer' }}
-                                        onClick={() => handleImageClick(medicine._id)}
-
                                     />
-                                    
-                                    <CardContent sx={{ 
-                                        p: { xs: 1, sm: 1.5 }, 
-                                        pb: { xs: 0.5, sm: 1 },
-                                        flex: 1,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        minHeight: 0 // Allow content to shrink
-                                    }}>
+                                    <CardContent sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
                                         <Box sx={{ 
                                             display: 'flex', 
                                             justifyContent: 'space-between', 
                                             alignItems: 'flex-start',
-                                            mb: 1
+                                            mb: 1.5
                                         }}>
                                             <Typography 
                                                 variant="h6" 
-                                                component="h3"
+                                                component="h2"
                                                 sx={{ 
                                                     fontWeight: 600,
                                                     fontSize: '1rem',
-                                                    lineHeight: 1.3,
-                                                    color: '#1a202c',
+                                                    lineHeight: 1.2,
                                                     flex: 1,
-                                                    mr: 1,
-                                                    display: '-webkit-box',
-                                                    WebkitLineClamp: 2,
-                                                    WebkitBoxOrient: 'vertical',
-                                                    overflow: 'hidden',
-                                                    textAlign: 'left'
+                                                    mr: 1
                                                 }}
                                             >
                                                 {medicine.name}
@@ -244,14 +198,12 @@ export default function AllMedicines() {
                                             variant="body2" 
                                             color="text.secondary"
                                             sx={{ 
-                                                mb: 1,
-                                                fontSize: '0.875rem',
+                                                mb: 2,
                                                 display: '-webkit-box',
                                                 WebkitLineClamp: 2,
                                                 WebkitBoxOrient: 'vertical',
                                                 overflow: 'hidden',
-                                                textAlign: 'left',
-                                                minHeight: '2.5rem' // Fixed height for description
+                                                height: '40px'
                                             }}
                                         >
                                             {medicine.description}
@@ -261,7 +213,7 @@ export default function AllMedicines() {
                                             display: 'flex', 
                                             alignItems: 'center',
                                             gap: 1,
-                                            mt: 'auto' // Push to bottom of content area
+                                            mt: 'auto'
                                         }}>
                                             <StockChip 
                                                 size="small" 
@@ -271,44 +223,27 @@ export default function AllMedicines() {
                                             <Typography 
                                                 variant="caption" 
                                                 color="text.secondary"
-                                                sx={{ fontSize: '0.75rem' }}
                                             >
-                                                {medicine.stock} available
+                                                {medicine.stock} left
                                             </Typography>
                                         </Box>
                                     </CardContent>
                                     
-                                    <CardActions sx={{ 
-                                        p: { xs: 1, sm: 1.5 }, 
-                                        pt: 0,
-                                        gap: { xs: 0.5, sm: 1 },
-                                        flexDirection: { xs: 'column', sm: 'row' },
-                                        flexShrink: 0 // Prevent buttons from shrinking
-                                    }}>
+                                    <CardActions sx={{ p: 2, pt: 0, gap: 1 }}>
                                         <StyledButton 
                                             variant="contained" 
                                             color="primary"
-                                            size="small"
                                             fullWidth
-                                            disableElevation
-                                            sx={{ 
-                                                minHeight: { xs: '36px', sm: '32px' },
-                                                fontSize: { xs: '0.8rem', sm: '0.875rem' }
-                                            }}
+                                            onClick={() => handleViewDetails(medicine._id)}
                                         >
-                                            Add to Cart
+                                            View Details
                                         </StyledButton>
                                         <StyledButton 
                                             variant="outlined" 
                                             color="primary"
-                                            size="small"
                                             fullWidth
-                                            sx={{ 
-                                                minHeight: { xs: '36px', sm: '32px' },
-                                                fontSize: { xs: '0.8rem', sm: '0.875rem' }
-                                            }}
                                         >
-                                            View Details
+                                            Add to Cart
                                         </StyledButton>
                                     </CardActions>
                                 </StyledCard>
