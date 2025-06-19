@@ -7,6 +7,12 @@ import { Box } from '@mui/material';
 import './App.css';
 
 function App() {
+
+  const token = localStorage.getItem('token');
+  if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
+
   return (
     <Router>
       <Box sx={{ minHeight: '100vh', backgroundColor: '#fafbfc' }}>

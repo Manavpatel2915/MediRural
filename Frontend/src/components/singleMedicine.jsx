@@ -73,11 +73,13 @@ export default function SingleMedicine() {
     useEffect(() => {
         const fetchMedicine = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/medicines/${id}`);
-                setMedicine(response.data);
+                const response = await axios.get(`http://localhost:5000/api/medicines/${id}`);
+                if (response.data.success) {
+                    setMedicine(response.data.medicine);
+                }
                 setLoading(false);
             } catch (err) {
-                setError('Error fetching medicine details: ' + err.message);
+                setError('Error fetching medicine : ' + err.message);
                 setLoading(false);
             }
         };

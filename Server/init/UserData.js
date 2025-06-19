@@ -1,15 +1,13 @@
-const bcrypt = require('bcryptjs');
 
-// Create admin user with hashed password
-const adminPassword = bcrypt.hashSync("lambu@123", 10);
+
 
 const userData = [
     // Admin user
     {
-        name: "prince patel",
-        email: "princepatel@medirural.com",
-        password: adminPassword,
-        phone: "9876543210",
+        name: "vaibhav patil",
+        email: "patil@medirural.com",
+        password: "patil@123",
+        phone: "6355383255",
         address: {
             street: "Admin Office",
             city: "surat",

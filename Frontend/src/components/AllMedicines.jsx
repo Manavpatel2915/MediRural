@@ -84,11 +84,15 @@ export default function AllMedicines() {
     useEffect(() => {
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/medicines');
-                setMedicines(response.data);
+                const response = await axios.get('http://localhost:5000/api/medicines/');
+                if (response.data.success) {
+                    setMedicines(response.data.medicines);
+                } else {
+                    setError('Error fetching medicines: ' + (response.data.message || 'Unknown error'));
+                }
                 setLoading(false);
             } catch (err) {
-                setError('Error fetching medicines: ' + err.message);
+                setError('Error fetching medicines: ' + (err.response?.data?.message || err.message));
                 setLoading(false);
             }
         };
