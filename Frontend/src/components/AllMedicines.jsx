@@ -16,8 +16,8 @@ import {
     Fade
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import SingleMedicine from './singleMedicine.jsx';
 
+import SingleMedicine from './singleMedicine.jsx';
 
 // Styled components for enhanced UI
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -124,7 +124,7 @@ export default function AllMedicines() {
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <CircularProgress />
+                <CircularProgress size={40} />
             </Box>
         );
     }
@@ -132,7 +132,7 @@ export default function AllMedicines() {
     if (error) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-                <Typography color="error">{error}</Typography>
+                <Typography color="error" variant="h6">{error}</Typography>
             </Box>
         );
     }
@@ -198,8 +198,10 @@ export default function AllMedicines() {
                                         component="img"
                                         image={medicine.imageUrl}
                                         alt={medicine.name}
+
                                         sx={{ cursor: 'pointer' }}
                                         onClick={() => handleImageClick(medicine._id)}
+
                                     />
                                     
                                     <CardContent sx={{ 
@@ -317,4 +319,4 @@ export default function AllMedicines() {
             </Container>
         </Box>
     );
-}
+}   

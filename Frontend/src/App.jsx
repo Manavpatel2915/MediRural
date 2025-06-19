@@ -3,6 +3,7 @@ import AllMedicines from './components/AllMedicines.jsx';
 import Navbar from './components/Navbar.jsx';
 import { Box } from '@mui/material';
 import './App.css';
+import Navbar from './components/Navbar.jsx';
 
 function App() {
   return (
