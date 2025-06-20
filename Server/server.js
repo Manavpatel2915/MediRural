@@ -6,7 +6,7 @@ const Medicine = require('./models/MedicineModel');
 const orderRoutes = require('./routes/orderRoutes');
 const userRoutes = require('./routes/userRoutes');
 const medicineRoutes = require('./routes/medicineRoutes');
-
+const cookieParser = require('cookie-parser');
 const auth = require('./middlewares/auth');
 // Load environment variables
 dotenv.config();
@@ -14,10 +14,18 @@ dotenv.config();
 // Create Express app
 const app = express();
 
+// CORS configuration
+app.use(cors({
+    origin: 'http://localhost:5173', // Your frontend URL
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/medirural';
@@ -80,8 +88,6 @@ app.use((err, req, res, next) => {
         error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
 });
-
-
 
 // Start server
 const PORT = process.env.PORT || 5000;

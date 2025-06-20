@@ -14,7 +14,8 @@ import {
     CircularProgress,
     Paper,
     Chip,
-    Fade
+    Fade,
+    Grow
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -34,6 +35,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
         transform: 'translateY(-6px)',
         boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
     },
+    cursor: 'pointer',
     [theme.breakpoints.down('sm')]: {
         height: '400px', // Fixed height on mobile
     },
@@ -166,14 +168,12 @@ export default function AllMedicines() {
                 <Grid container spacing={{ xs: 2, md: 3 }}>
                     {medicines.map((medicine, index) => (
                         <Grid item key={medicine._id} xs={12} sm={6} md={4} lg={3}>
-                            <Fade in={true} timeout={300 + index * 50}>
-                                <StyledCard>
+                            <Grow in={true} timeout={300 + index * 50}>
+                                <StyledCard onClick={() => handleViewDetails(medicine._id)}>
                                     <StyledCardMedia
                                         component="img"
                                         image={medicine.imageUrl}
                                         alt={medicine.name}
-                                        onClick={() => handleViewDetails(medicine._id)}
-                                        sx={{ cursor: 'pointer' }}
                                     />
                                     <CardContent sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
                                         <Box sx={{ 
@@ -251,7 +251,7 @@ export default function AllMedicines() {
                                         </StyledButton>
                                     </CardActions>
                                 </StyledCard>
-                            </Fade>
+                            </Grow>
                         </Grid>
                     ))}
                 </Grid>
