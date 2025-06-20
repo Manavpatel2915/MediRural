@@ -8,6 +8,8 @@ import Register from './components/Register.jsx';
 import { Box } from '@mui/material';
 import './App.css';
 import { AuthProvider } from './context/AuthContext';
+import Footer from './components/Footer.jsx';
+import About from './components/About.jsx';
 
 function App() {
   return (
@@ -22,9 +24,11 @@ function App() {
               <Route path="/medicine/:id" element={<SingleMedicine />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-            </Routes>
+              <Route path="/about" element={<About />} />
+              </Routes>
           </Box>
         </Box>
+        <Footer />
       </Router>
     </AuthProvider>
   );
