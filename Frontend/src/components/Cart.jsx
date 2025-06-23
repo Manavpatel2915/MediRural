@@ -83,12 +83,7 @@ export default function Cart() {
     };
 
     const handleCheckout = () => {
-        // Navigate to checkout page (you can implement this later)
-        setSnackbar({
-            open: true,
-            message: 'Checkout functionality coming soon!',
-            severity: 'info'
-        });
+        navigate('/checkout');
     };
 
     const handleClearCart = () => {
