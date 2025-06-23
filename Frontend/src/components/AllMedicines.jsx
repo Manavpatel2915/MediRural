@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useCart } from '../context/CartContext';
 import {
     Container,
     Grid,
@@ -82,6 +83,7 @@ export default function AllMedicines() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { addToCart } = useCart();
 
     useEffect(() => {
         const fetchMedicines = async () => {
@@ -104,6 +106,12 @@ export default function AllMedicines() {
 
     const handleViewDetails = (id) => {
         navigate(`/medicine/${id}`);
+    };
+
+    const handleAddToCart = (medicine, event) => {
+        event.stopPropagation(); // Prevent card click
+        addToCart(medicine, 1);
+        // You can add a toast notification here
     };
 
     if (loading) {
@@ -246,6 +254,7 @@ export default function AllMedicines() {
                                             variant="outlined" 
                                             color="primary"
                                             fullWidth
+                                            onClick={(e) => handleAddToCart(medicine, e)}
                                         >
                                             Add to Cart
                                         </StyledButton>

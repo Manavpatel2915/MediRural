@@ -3,9 +3,11 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { motion } from "motion/react"
 import { AnimatePresence } from "motion/react"
 import UserMenu from './UserMenu';
+import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { getCartCount } = useCart();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -53,6 +55,20 @@ const Navbar = () => {
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </span>
+          
+          {/* Cart Icon */}
+          <Link to="/cart" className="cursor-pointer flex items-center hover:text-blue-100 transition-colors relative">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            {/* Cart Badge - shows number of items */}
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {getCartCount()}
+            </span>
+          </Link>
+          
           {/* User Menu */}
           <UserMenu />
         </div>

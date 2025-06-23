@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useCart } from '../context/CartContext';
 import {
     Card,
     CardContent,
@@ -69,6 +70,7 @@ export default function SingleMedicine() {
     const [medicine, setMedicine] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { addToCart } = useCart();
 
     useEffect(() => {
         const fetchMedicine = async () => {
@@ -89,6 +91,13 @@ export default function SingleMedicine() {
 
     const handleBack = () => {
         navigate('/medicines');
+    };
+
+    const handleAddToCart = () => {
+        if (medicine) {
+            addToCart(medicine, 1);
+            // You can add a toast notification here
+        }
     };
 
     if (loading) {
@@ -207,7 +216,7 @@ export default function SingleMedicine() {
                                     variant="contained"
                                     color="primary"
                                     disabled={medicine.stock === 0}
-                                    
+                                    onClick={handleAddToCart}
                                 >
                                     Add to Cart
                                 </StyledButton>
