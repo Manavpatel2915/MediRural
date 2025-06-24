@@ -60,7 +60,7 @@ export default function Cart() {
     const navigate = useNavigate();
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
-    const handleQuantityChange = (medicineId, newQuantity) => {
+    const handleQuantityChange = (medicineId , newQuantity) => {
         if (newQuantity < 1) {
             removeFromCart(medicineId);
             setSnackbar({

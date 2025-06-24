@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const Login = ({ onClose }) => {
+const Login = ({ onClose , isAdmin }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -10,6 +10,7 @@ const Login = ({ onClose }) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const from = isAdmin ? '/admin' : '/' ;
   const { login } = useAuth();
 
   const handleChange = (e) => {
@@ -32,7 +33,8 @@ const Login = ({ onClose }) => {
       
       
       // Redirect to home page
-      navigate('/');
+      console.log(from)
+      navigate(from);
     } catch (err) {
       console.error('Login error:', err);
       setError(err.message || 'Login failed');

@@ -1,21 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const Order = require('../models/OrderModel')
-const WrapAsync = require('../utility/WrapAsync')
-const ExpressError = require('../utility/ExpressError')
+const Order = require('../models/OrderModel');
+const WrapAsync = require('../utility/WrapAsync');
+const ExpressError = require('../utility/ExpressError');
 const { body, validationResult } = require('express-validator');
 
-router.get('/', WrapAsync(async (req, res)=>{
-    try {
-        const orders = await Order.find({})
-        res.status(200).json({success: true, orders})        
-    } catch (error) {
-        next(new ExpressError(400, "Invalid request"))
-    }
-}))
+//getting all the orders 
+router.get('/', WrapAsync(async (req, res) => {
+  const orders = await Order.find({});
+  res.status(200).json({ success: true, orders });
+}));
 
-router.post('/',
-  // Validation middleware
+
+//adding the order
+router.post(
+  '/',
   [
     body('shipping.name').notEmpty().withMessage('Name is required'),
     body('shipping.email').isEmail().withMessage('Valid email is required'),
@@ -25,46 +24,39 @@ router.post('/',
     body('shipping.state').notEmpty().withMessage('State is required'),
     body('shipping.pincode').matches(/^[0-9]{6}$/).withMessage('Valid 6-digit pincode is required'),
     body('shipping.country').notEmpty().withMessage('Country is required'),
-    // Add more validations as needed
   ],
   WrapAsync(async (req, res) => {
-    // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ success: false, errors: errors.array() });
     }
-    try {
-      const order = new Order(req.body)
-      await order.save()
-      res.status(201).json({success: true, message: "Order created successfully"})
-    } catch (error) {
-      next(new ExpressError(400, "Invalid request"))
-    }
+
+    const order = new Order(req.body);
+    await order.save();
+
+    res.status(201).json({ success: true, message: "Order created successfully" });
   })
-)
+);
 
-router.put('/:id', WrapAsync(async (req, res)=>{
-    try {
-        const order = await Order.findByIdAndUpdate(req.params.id, req.body, {new: true})
-        res.status(200).json({
-            success: true,
-            message : "order updated successfully"
-        })
-    } catch (error) {
-        next(new ExpressError(400, "Invalid request"))
-    }
-}))
+//updating the order
+router.put('/:id', WrapAsync(async (req, res) => {
+  const order = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
-router.delete('/:id', WrapAsync(async (req, res)=>{
-    try {
-        await Order.findByIdAndDelete(req.params.id)
-        res.status(200).json({
-            success: true,
-            message : "order deleted successfully"
-        })
-    } catch (error) {
-        next(new ExpressError(400, "Invalid request"))
-    }
-}))
+  res.status(200).json({
+    success: true,
+    message: "order updated successfully",
+  });
+}));
+
+
+//deleting the order
+router.delete('/:id', WrapAsync(async (req, res) => {
+  await Order.findByIdAndDelete(req.params.id);
+
+  res.status(200).json({
+    success: true,
+    message: "order deleted successfully",
+  });
+}));
 
 module.exports = router;

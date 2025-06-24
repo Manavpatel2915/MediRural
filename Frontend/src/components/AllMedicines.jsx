@@ -241,7 +241,7 @@ export default function AllMedicines() {
                                         </Box>
                                     </CardContent>
                                     
-                                    <CardActions sx={{ p: 2, pt: 0, gap: 1 }}>
+                                    <CardActions sx={{ p: 2, pt: 0 }}>
                                         <StyledButton 
                                             variant="contained" 
                                             color="primary"

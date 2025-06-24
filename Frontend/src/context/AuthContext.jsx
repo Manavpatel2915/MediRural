@@ -5,6 +5,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin , setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }) => {
       if (response.data.success) {
         setIsAuthenticated(true);
         setUser(response.data.user);
+        setIsAdmin(response.data.user.role === 'admin' ? true : false)
       }
     } catch (error) {
       setIsAuthenticated(false);
@@ -59,6 +61,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     isAuthenticated,
+    isAdmin,
     user,
     loading,
     login,

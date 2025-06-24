@@ -18,7 +18,7 @@ const cartReducer = (state, action) => {
             } else {
                 return {
                     ...state,
-                    items: [...state.items, action.payload]
+                    items: [...state.items,  action.payload]
                 };
             }
         
@@ -60,7 +60,7 @@ export const CartProvider = ({ children }) => {
         items: []
     });
 
-    // Load cart from localStorage on mount
+    
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
