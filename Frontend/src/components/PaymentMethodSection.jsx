@@ -6,7 +6,7 @@ export default function PaymentMethodSection({ payment, setPayment }) {
       <h2 className="text-xl font-semibold mb-4 text-blue-700">Payment Method</h2>
       <div className="flex flex-col gap-3">
         <label className="flex items-center gap-2 cursor-pointer">
-          <input type="radio" value="cod" checked={payment === 'cod'} onChange={e => setPayment(e.target.value)} className="accent-blue-700" />
+          <input type="radio" value="cod" checked={payment === 'cash'} onChange={e => setPayment(e.target.value)} className="accent-blue-700" />
           <span>Cash on Delivery</span>
         </label>
         <label className="flex items-center gap-2 cursor-pointer">

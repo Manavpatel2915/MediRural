@@ -20,6 +20,7 @@ import Medicines from './components/adminComponents/Medicines.jsx';
 import { useAuth } from './context/AuthContext';
 import AddMedicine from './components/adminComponents/AddMedicine.jsx';
 import UpdateMedicine from './components/adminComponents/UpdateMedicine.jsx';
+import Orders from './components/adminComponents/Orders.jsx'
 function App() {
 
   const { user, isAdmin } = useAuth();
@@ -45,6 +46,7 @@ function App() {
               <Route path='/admin/medicines' element={<Medicines/>} />
               <Route path='/admin/medicines/add' element={<AddMedicine/>} />
               <Route path='/admin/medicines/edit/:id' element={<UpdateMedicine/>} />
+              <Route path='/admin/orders' element={<Orders/>} />
             </Route>
           </Routes>
             

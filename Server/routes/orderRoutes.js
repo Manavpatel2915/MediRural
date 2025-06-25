@@ -4,9 +4,10 @@ const Order = require('../models/OrderModel');
 const WrapAsync = require('../utility/WrapAsync');
 const ExpressError = require('../utility/ExpressError');
 const { body, validationResult } = require('express-validator');
+const auth = require('../middlewares/auth');
 
 //getting all the orders 
-router.get('/', WrapAsync(async (req, res) => {
+router.get('/' , auth , WrapAsync(async (req, res) => {
   const orders = await Order.find({});
   res.status(200).json({ success: true, orders });
 }));
@@ -24,7 +25,7 @@ router.post(
     body('shipping.state').notEmpty().withMessage('State is required'),
     body('shipping.pincode').matches(/^[0-9]{6}$/).withMessage('Valid 6-digit pincode is required'),
     body('shipping.country').notEmpty().withMessage('Country is required'),
-  ],
+  ], auth ,
   WrapAsync(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

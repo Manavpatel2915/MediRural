@@ -1,61 +1,71 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-    user : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'User',
-        required : true
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+
+  items: [{
+    medicine: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Medicine',
+      required: true
     },
-    items : [{
-        medicine : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : 'Medicine',
-            required : true
-        },
-        quantity : {
-            type : Number,
-            required : true,
-            min : 1
-        },
-        price : {
-            type : Number,
-            required : true,
-            min : 0
-        }
-    }],
-    totalAmount : {
-        type : Number,
-        required : true,
-        min : 0
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1
     },
-    status :{
-        type : String,
-        enum : ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
-        default : 'pending'
-    },
-    isSubscription : {
-        type : Boolean,
-        default : false
-    }, 
-    subscriptionDetails : {
-        frequency : {
-            type : String,
-            enum : ['weekly', 'monthly'],
-            default : 'daily'
-        },
-        nextDeliveryDate : {
-            type : Date,
-            required : ()=> this.isSubscription
-        },
-    } ,
-    paymentDetails : {
-        paymentMethod : {
-            type : String,
-            enum : ['card', 'cash', 'upi'],
-            default : 'cash'
-        },
+    price: {
+      type: Number,
+      required: true,
+      min: 0
     }
-})
+  }],
+
+  totalAmount: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+    default: 'pending'
+  },
+
+  isSubscription: {
+    type: Boolean,
+    default: false
+  },
+
+  subscriptionDetails: {
+    frequency: {
+      type: String,
+      enum: ['weekly', 'monthly'],
+      required: function () {
+        return this.isSubscription;
+      }
+    },
+    nextDeliveryDate: {
+      type: Date,
+      required: function () {
+        return this.isSubscription;
+      }
+    }
+  },
+
+  paymentDetails: {
+    paymentMethod: {
+      type: String,
+      enum: ['card', 'cash', 'upi'],
+      default: 'cash'
+    }
+  }
+}, {timestamps : true});
 
 orderSchema.methods.isSubscriptionOrder = ()=> this.isSubscription ;
 

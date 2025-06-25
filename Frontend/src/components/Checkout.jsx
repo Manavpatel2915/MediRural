@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import CartReviewSection from './CartReviewSection';
 import ShippingFormSection from './ShippingFormSection';
 import PaymentMethodSection from './PaymentMethodSection';
 import OrderSummarySection from './OrderSummarySection';
 import OrderConfirmationSection from './OrderConfirmationSection';
-
+import axios from 'axios'
 const steps = [
   'Cart Review',
   'Shipping',
@@ -15,13 +16,14 @@ const steps = [
 ];
 
 export default function Checkout() {
-  const { items, clearCart } = useCart();
+  const { items, clearCart, getCartTotal } = useCart();
+  const { user } = useAuth();
 
   const [step, setStep] = useState(0);
   const [shipping, setShipping] = useState({
     name: '', email: '', phone: '', address: '', city: '', state: '', pincode: '', country: 'India'
   });
-  const [payment, setPayment] = useState('cod');
+  const [payment, setPayment] = useState('cash');
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [errors, setErrors] = useState({});
@@ -49,12 +51,67 @@ export default function Checkout() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handlePlaceOrder = () => {
-    setOrderId('ORD' + Date.now());
+
+const handlePlaceOrder = async () => {
+  try {
+    if (!user || !user.id) {
+      alert('You must be logged in to place an order.');
+      return;
+    }
+
+    
+    const isSubscription = false; 
+
+    // ✅ Base order payload
+    const orderData = {
+      user: user.id,
+      items: items.map(item => ({
+        medicine: item.medicine._id,
+        price: item.medicine.price,
+        quantity: item.quantity
+      })),
+      totalAmount: getCartTotal(),
+      shipping,
+      isSubscription,
+      paymentDetails: {
+        paymentMethod: payment // one of: 'cash', 'card', 'upi'
+      }
+    };
+
+    // ✅ Conditionally add subscriptionDetails only if it's a subscription order
+    if (isSubscription) {
+      orderData.subscriptionDetails = {
+        frequency: 'weekly', // or 'monthly'
+        nextDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // e.g., 1 week later
+      };
+    }
+
+    // ✅ Submit order
+    const { data } = await axios.post(
+      'http://localhost:5000/api/orders',
+      orderData,
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    setOrderId(data.orderId || ('ORD' + Date.now()));
     setOrderPlaced(true);
     clearCart();
     nextStep();
-  };
+  } catch (error) {
+    console.error('Order placement failed:', error.response?.data || error.message);
+    alert(
+      'Failed to place order: ' +
+      (error.response?.data?.errors?.[0]?.msg ||
+        error.response?.data?.message ||
+        error.message)
+    );
+  }
+};
 
   return (
     <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-lg p-6 mt-10 mb-10">
