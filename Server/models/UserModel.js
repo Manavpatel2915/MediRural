@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['customer', 'admin'],
+        enum: ['customer', 'admin', 'supplier'],
         default: 'customer'
     },
     // Track order count for free medicine after 10 orders

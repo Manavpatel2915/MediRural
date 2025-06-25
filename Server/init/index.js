@@ -6,7 +6,7 @@ const medicineData = require('./MedicineData');
 require('dotenv').config();
 
 // Use default MongoDB URI if not defined in environment
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/medirural';
+const MONGODB_URI = process.env.MONGODB_URI ;
 
 const initializeDatabase = async () => {
     try {

@@ -8,7 +8,7 @@ export default function CartReviewSection() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4 text-blue-700">Cart Review</h2>
+          <h2 className="text-xl font-semibold mb-4 text-blue-700">Cart Review</h2>
       {items.length === 0 ? (
         <p className="text-gray-500">Your cart is empty.</p>
       ) : (

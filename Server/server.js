@@ -18,7 +18,7 @@ const app = express();
 app.use(cors({
     origin: 'http://localhost:5173', // Your frontend URL
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -71,6 +71,54 @@ app.get('/api/medicines/:id', async (req, res)=>{
         res.json({success: false, message: error.message});
     }
 })
+
+// Public PATCH route for updating medicine stock
+app.patch('/api/medicines/:id', async (req, res) => {
+    console.log('PATCH request received:', req.params.id, req.body);
+    try {
+        const { id } = req.params;
+        const { stock } = req.body;
+
+        console.log('Updating medicine:', id, 'to stock:', stock);
+
+        if (typeof stock !== 'number' || stock < 0) {
+            console.log('Invalid stock value:', stock);
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Stock must be a non-negative number' 
+            });
+        }
+
+        const updatedMedicine = await Medicine.findByIdAndUpdate(
+            id, 
+            { stock }, 
+            { new: true }
+        );
+
+        if (!updatedMedicine) {
+            console.log('Medicine not found:', id);
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Medicine not found' 
+            });
+        }
+
+        console.log('Medicine updated successfully:', updatedMedicine.name, 'stock:', updatedMedicine.stock);
+
+        res.json({
+            success: true,
+            message: 'Medicine stock updated successfully',
+            medicine: updatedMedicine,
+        });
+    } catch (error) {
+        console.error('Error in PATCH route:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
 // Protected medicine routes (for admin operations)
 app.use('/api/medicines', auth, medicineRoutes);
 
