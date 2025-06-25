@@ -8,7 +8,7 @@ const auth = require('../middlewares/auth');
 
 //getting all the orders 
 router.get('/' , auth , WrapAsync(async (req, res) => {
-  const orders = await Order.find({});
+  const orders = await Order.find({}).populate('user').populate('items.medicine');
   res.status(200).json({ success: true, orders });
 }));
 
@@ -40,7 +40,7 @@ router.post(
 );
 
 //updating the order
-router.put('/:id', WrapAsync(async (req, res) => {
+router.put('/:id', auth , WrapAsync(async (req, res) => {
   const order = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
   res.status(200).json({
@@ -51,7 +51,7 @@ router.put('/:id', WrapAsync(async (req, res) => {
 
 
 //deleting the order
-router.delete('/:id', WrapAsync(async (req, res) => {
+router.delete('/:id', auth , WrapAsync(async (req, res) => {
   await Order.findByIdAndDelete(req.params.id);
 
   res.status(200).json({

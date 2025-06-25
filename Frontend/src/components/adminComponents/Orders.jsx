@@ -19,6 +19,7 @@ import {
   Pill
 } from 'lucide-react';
 import axios from 'axios'
+import {motion} from 'framer-motion'
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -110,10 +111,20 @@ const Orders = () => {
     setExpandedRows(newExpanded);
   };
 
-  const updateOrderStatus = (orderId, newStatus) => {
+  const updateOrderStatus = async (orderId, newStatus) => {
     setOrders(orders.map(order => 
       order._id === orderId ? { ...order, status: newStatus } : order
     ));
+    try {
+      let res = await axios.put(`http://localhost:5000/api/orders/${orderId}`,
+        { status : newStatus} , {withCredentials : true}
+      )
+      if (res.data.success){
+        alert('Successfully updated the status !')
+      }
+    } catch (error) {
+      alert(`Error updating the status :${error.message}`)
+    }
   };
 
   const formatDate = (date) => {
@@ -377,8 +388,16 @@ const Orders = () => {
 
         {/* Order Details Modal */}
         {selectedOrder && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+          <motion.div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={()=>setSelectedOrder(null)}
+          initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+             exit={{ opacity: 0 }}
+          >
+            <motion.div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto" onClick={e=>e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}  
+              >
               <div className="p-6 border-b">
                 <div className="flex justify-between items-center">
                   <h2 className="text-2xl font-bold text-gray-900">Order Details</h2>
@@ -415,6 +434,7 @@ const Orders = () => {
 
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-3">Customer Information</h3>
+
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <p className="font-medium">{selectedOrder.user.name}</p>
                     <p className="text-gray-600">{selectedOrder.user.email}</p>
@@ -427,6 +447,7 @@ const Orders = () => {
                     {selectedOrder.items.map((item, index) => (
                       <div key={index} className="flex justify-between items-center p-3 border rounded-lg">
                         <div>
+                          {console.log(item)}
                           <p className="font-medium">{item.medicine.name}</p>
                           <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                         </div>
@@ -464,8 +485,8 @@ const Orders = () => {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
       </div>
     </div>
