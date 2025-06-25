@@ -10,7 +10,7 @@ const Orders = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/orders');
+                const response = await axios.get('http://localhost:5000/api/orders', { withCredentials: true });
                 setOrders(response.data.orders);
                 setLoading(false);
             } catch (error) {
@@ -31,7 +31,7 @@ const Orders = () => {
     }
     const handleUpdateStatus = async (id, newStatus) => {
         try {
-            const response = await axios.put(`http://localhost:5000/api/orders/${id}`, { status: newStatus });
+            const response = await axios.put(`http://localhost:5000/api/orders/${id}`, { status: newStatus }, { withCredentials: true });
             setOrders(orders.map((order) => order._id === id ? { ...order, status: newStatus } : order));
             toast.success('Status updated successfully');
         } catch (error) {

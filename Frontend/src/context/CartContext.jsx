@@ -56,23 +56,23 @@ const cartReducer = (state, action) => {
 };
 
 export const CartProvider = ({ children }) => {
-    const [state, dispatch] = useReducer(cartReducer, {
-        items: []
-    });
-
-    
-    useEffect(() => {
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
+    const [state, dispatch] = useReducer(
+        cartReducer,
+        { items: [] },
+        (initialState) => {
             try {
-                const cartData = JSON.parse(savedCart);
-                dispatch({ type: 'SET_CART', payload: cartData });
-            } catch (error) {
-                console.error('Error loading cart from localStorage:', error);
+                const savedCart = localStorage.getItem('cart');
+                return savedCart ? { items: JSON.parse(savedCart) } : initialState;
+            } catch (e) {
+                console.error('Error loading cart:', e);
+                return initialState;
             }
         }
-    }, []);
+    );
+    
 
+    
+    
     // Save cart to localStorage whenever it changes
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(state.items));

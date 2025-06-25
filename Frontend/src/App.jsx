@@ -17,50 +17,49 @@ import Medicines from './components/adminComponents/Medicines.jsx';
 import { useAuth } from './context/AuthContext';
 import AddMedicine from './components/adminComponents/AddMedicine.jsx';
 import UpdateMedicine from './components/adminComponents/UpdateMedicine.jsx';
+import AdminOrders from './components/adminComponents/Orders.jsx';
 import Inventory from './components/supplierComponets/Inventory.jsx';
-import Orders from './components/supplierComponets/Orders.jsx';
+import SupplierOrders from './components/supplierComponets/Orders.jsx';
+import Revenue from './components/supplierComponets/Revenue.jsx';
 
-// Placeholder components for supplier routes 
-
-
-const Revenue = () => <div>Revenue Analytics - Coming Soon</div>;
-const Stats = () => <div>Statistics Dashboard - Coming Soon</div>;
+// import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
 
 function App() {
   const { user, isAdmin, isSupplier } = useAuth();
   
   return (
-    <CartProvider>
-      <Router>
-        <Routes>
-          <Route path='/' element={<UserLayout />}>
-            <Route index element={<AllMedicines />} />
-            <Route path='/medicines' element={<AllMedicines />} />
-            <Route path="/medicine/:id" element={<SingleMedicine />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-          </Route>
-          
-          <Route path='/admin' element={isAdmin ? <AdminLayout/> : <Login isAdmin={true}/>} >
-            <Route path='/admin/medicines' element={<Medicines/>} />
-            <Route path='/admin/medicines/add' element={<AddMedicine/>} />
-            <Route path='/admin/medicines/edit/:id' element={<UpdateMedicine/>} />
-          </Route>
-          
-          <Route path='/supplier' element={isSupplier ? <SupplierLayout/> : <Login isSupplier={true}/>} >
-            <Route index element={<div style={{padding: '2rem', textAlign: 'center'}}><h2>Welcome Supplier!</h2><p>Select an option from the menu.</p></div>} />
-            <Route path='/supplier/inventory' element={<Inventory/>} />
-            <Route path='/supplier/orders' element={<Orders />} />
-            <Route path='/supplier/revenue' element={<Revenue/>} />
-            <Route path='/supplier/stats' element={<Stats/>} />
-          </Route> 
-        </Routes>
-      </Router>
-    </CartProvider>
+    
+      <CartProvider>
+        <Router>
+
+          <Routes>
+            <Route path='/' element={<UserLayout />}>
+              <Route path="/" element={<AllMedicines />} />
+                    <Route path='/medicines' element={<AllMedicines />} />
+                    <Route path="/medicine/:id" element={<SingleMedicine />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+            </Route>
+            <Route path='/admin' element={isAdmin ? <AdminLayout/> : <Login isAdmin={true}/>} >
+              <Route path='/admin/medicines' element={<Medicines/>} />
+              <Route path='/admin/medicines/add' element={<AddMedicine/>} />
+              <Route path='/admin/medicines/edit/:id' element={<UpdateMedicine/>} />
+              <Route path='/admin/orders' element={<AdminOrders/>} />
+            </Route>
+            <Route path='/supplier' element={isSupplier ? <SupplierLayout/> : <Login isSupplier={true}/>} >
+           <Route path='/supplier/inventory' element={<Inventory/>} />
+           <Route path='/supplier/orders' element={<SupplierOrders/>} />
+           <Route path='/supplier/revenue' element={<Revenue/>} />
+            </Route>
+          </Routes>
+            
+        </Router>
+
+      </CartProvider>
   );
 }
 

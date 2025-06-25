@@ -1,5 +1,15 @@
+<<<<<<< HEAD
+=======
+const bcrypt = require('bcryptjs')
+const hashPassword = async (password)=>{
+    const salt = await bcrypt.genSalt(10);
+    password = await bcrypt.hash(password, salt);
+    return password;
+}
+
+
+>>>>>>> 8560b1020a198bfd57e8ba4a88d03f1e03b0cf51
 const userData = [
-    // Admin user
     {
         name: "vaibhav patil",
         email: "patil@medirural.com",
@@ -26,6 +36,7 @@ const userData = [
         },
         role:"admin"
     },
+<<<<<<< HEAD
     // Supplier user
     {
         name: "vaibhav patil supplier",
@@ -52,6 +63,8 @@ const userData = [
         },
         role: "supplier"
     }
+=======
+>>>>>>> 8560b1020a198bfd57e8ba4a88d03f1e03b0cf51
 
 ];
 

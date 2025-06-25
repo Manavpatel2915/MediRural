@@ -27,13 +27,7 @@ router.post('/register', async (req, res) => {
         }
 
         // Create new user
-        const user = new User({
-            email,
-            password,
-            name,
-            phone,
-            address: address || {}
-        });
+        const user = new User(req.body);
 
         await user.save();
 
