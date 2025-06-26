@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
+import SearchFilterBar from './adminComponents/SearchFilterBar';
 import {
     Container,
     Grid,
@@ -22,7 +23,7 @@ import { styled } from '@mui/material/styles';
 
 // Styled components for enhanced UI
 const StyledCard = styled(Card)(({ theme }) => ({
-    height: '420px', // Fixed height for consistency
+    height: '420px', 
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -31,20 +32,21 @@ const StyledCard = styled(Card)(({ theme }) => ({
     overflow: 'hidden',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
     border: '1px solid rgba(0, 0, 0, 0.06)',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f8f9fa',
     '&:hover': {
         transform: 'translateY(-6px)',
         boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
     },
     cursor: 'pointer',
     [theme.breakpoints.down('sm')]: {
-        height: '400px', // Fixed height on mobile
+        height: '420px', // Fixed height on mobile
     },
 }));
 
 const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
     height: '200px', // Fixed height for consistent image display
     width: '100%',
+    borderRadius : '12px',
     objectFit: 'cover',
     backgroundColor: '#f8f9fa',
     flexShrink: 0, // Prevent image from shrinking
@@ -82,15 +84,26 @@ export default function AllMedicines() {
     const [medicines, setMedicines] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [categories, setCategories] = useState(['All']);
     const navigate = useNavigate();
     const { addToCart } = useCart();
+    const location = useLocation();
+    const initialSearch = location.state?.search || '';
+    const initialCategory = location.state?.category || 'All';
+    const [searchTerm, setSearchTerm] = useState(initialSearch);
+    const [selectedCategory, setSelectedCategory] = useState(initialCategory);
 
     useEffect(() => {
         const fetchMedicines = async () => {
             try {
                 const response = await axios.get('http://localhost:5000/api/medicines/');
                 if (response.data.success) {
-                    setMedicines(response.data.medicines);
+                    const medicineData = response.data.medicines;
+                    setMedicines(medicineData);
+                    
+                    // Extract unique categories
+                    const uniqueCategories = ['All', ...new Set(medicineData.map(med => med.category))];
+                    setCategories(uniqueCategories);
                 } else {
                     setError('Error fetching medicines: ' + (response.data.message || 'Unknown error'));
                 }
@@ -109,10 +122,16 @@ export default function AllMedicines() {
     };
 
     const handleAddToCart = (medicine, event) => {
-        event.stopPropagation(); // Prevent card click
+        event.stopPropagation();
         addToCart(medicine, 1);
-        // You can add a toast notification here
     };
+
+    const filteredMedicines = medicines.filter(medicine => {
+        const matchesSearch = medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            medicine.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = selectedCategory === 'All' || medicine.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
 
     if (loading) {
         return (
@@ -134,48 +153,30 @@ export default function AllMedicines() {
         <Box sx={{ 
             backgroundColor: '#fafbfc', 
             minHeight: '100vh', 
-            py: { xs: 3, md: 4 }
         }}>
-            <Container maxWidth="xl">
-                <Paper 
-                    elevation={0} 
-                    sx={{ 
-                        p: { xs: 2, md: 4 }, 
-                        mb: 4, 
-                        borderRadius: '20px', 
-                        backgroundColor: 'white',
-                        textAlign: 'center',
-                        border: '1px solid rgba(0, 0, 0, 0.08)'
-                    }}
-                >
-                    <Typography 
-                        variant="h3" 
-                        component="h1" 
-                        sx={{ 
-                            fontWeight: 700, 
-                            color: '#1a365d',
-                            mb: 2,
-                            fontSize: { xs: '2rem', md: '2.5rem' }
-                        }}
-                    >
-                        Medicine Catalog
-                    </Typography>
-                    <Typography 
-                        variant="h6" 
-                        color="text.secondary" 
-                        sx={{ 
-                            maxWidth: '700px', 
-                            mx: 'auto',
-                            fontSize: { xs: '1rem', md: '1.25rem' }
-                        }}
-                    >
-                        Browse our complete collection of high-quality medicines
-                    </Typography>
-                </Paper>
+            <Container maxWidth="xl" sx={{
+                padding : {
+                    xs : 0,
+                    sm : 2
+                }
+            }}>
                 
-                <Grid container spacing={{ xs: 2, md: 3 }}>
-                    {medicines.map((medicine, index) => (
-                        <Grid item key={medicine._id} xs={12} sm={6} md={4} lg={3}>
+
+                <SearchFilterBar
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                    categories={categories}
+                    searchPlaceholder="Search medicines by name or description..."
+                />
+                
+                <Grid container spacing={{ xs: 1, md: 3 }} sx={{
+                    display : 'flex',
+                    justifyContent : 'center'
+                }}>
+                    {filteredMedicines.map((medicine, index) => (
+                        <Grid item key={medicine._id} xs={10} sm={6} md={4} lg={3} sx={{display : 'flex' , justifyContent : 'space-between'}}>
                             <Grow in={true} timeout={300 + index * 50}>
                                 <StyledCard onClick={() => handleViewDetails(medicine._id)}>
                                     <StyledCardMedia
@@ -183,49 +184,56 @@ export default function AllMedicines() {
                                         image={medicine.imageUrl}
                                         alt={medicine.name}
                                     />
-                                    <CardContent sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            justifyContent: 'space-between', 
-                                            alignItems: 'flex-start',
-                                            mb: 1.5
+                                    <CardContent >
+                                        <Box sx={{
+                                            display: 'flex',
+                                            width: '100%',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            
                                         }}>
-                                            <Typography 
-                                                variant="h6" 
+                                            <Typography
+                                                variant="h6"
                                                 component="h2"
-                                                sx={{ 
+                                                sx={{
                                                     fontWeight: 600,
                                                     fontSize: '1rem',
-                                                    lineHeight: 1.2,
-                                                    flex: 1,
-                                                    mr: 1
+                                                    lineHeight: 1.1,
+                                                    mr: { sm: 1 },
+                                                    mb: { xs: 1, sm: 0 },
+                                                    wordBreak: 'break-word',
+                                                    whiteSpace: 'normal',
                                                 }}
                                             >
                                                 {medicine.name}
                                             </Typography>
-                                            <PriceChip label={`₹${medicine.price}`} />
+                                            <PriceChip
+                                                label={`₹${medicine.price}`}
+                                            />
                                         </Box>
                                         
                                         <Typography 
                                             variant="body2" 
                                             color="text.secondary"
                                             sx={{ 
-                                                mb: 2,
+                                                mb: 1,
                                                 display: '-webkit-box',
                                                 WebkitLineClamp: 2,
                                                 WebkitBoxOrient: 'vertical',
                                                 overflow: 'hidden',
-                                                height: '40px'
+                                                height: '40px',
+                                                
                                             }}
                                         >
                                             {medicine.description}
                                         </Typography>
                                         
                                         <Box sx={{ 
-                                            display: 'flex', 
+                                            display : 'flex',
                                             alignItems: 'center',
                                             gap: 1,
-                                            mt: 'auto'
+                                            
+
                                         }}>
                                             <StockChip 
                                                 size="small" 
@@ -241,15 +249,15 @@ export default function AllMedicines() {
                                         </Box>
                                     </CardContent>
                                     
-                                    <CardActions sx={{ p: 2, pt: 0 }}>
-                                        <StyledButton 
-                                            variant="contained" 
-                                            color="primary"
-                                            fullWidth
-                                            onClick={() => handleViewDetails(medicine._id)}
-                                        >
-                                            View Details
-                                        </StyledButton>
+                                    <CardActions 
+                                        sx={{ 
+                                            px: 2, py: 0, 
+                                            display: 'flex',
+                                            alignItems : 'end',
+                                            flexDirection: { xs: 'column', sm: 'row' }, 
+                                            gap: { xs: 1, sm: 0 } 
+                                        }}
+                                    >
                                         <StyledButton 
                                             variant="outlined" 
                                             color="primary"
@@ -258,11 +266,36 @@ export default function AllMedicines() {
                                         >
                                             Add to Cart
                                         </StyledButton>
+                                        <StyledButton 
+                                            variant="contained" 
+                                            color="primary"
+                                            fullWidth
+                                            onClick={() => handleViewDetails(medicine._id)}
+                                        >
+                                            View Details
+                                        </StyledButton>
                                     </CardActions>
                                 </StyledCard>
                             </Grow>
                         </Grid>
                     ))}
+                    {filteredMedicines.length === 0 && (
+                        <Grid item xs={12}>
+                            <Box 
+                                sx={{ 
+                                    textAlign: 'center', 
+                                    py: 8,
+                                    backgroundColor: 'white',
+                                    borderRadius: '12px',
+                                    border: '1px solid rgba(0, 0, 0, 0.08)'
+                                }}
+                            >
+                                <Typography variant="h6" color="text.secondary">
+                                    No medicines found matching your search criteria
+                                </Typography>
+                            </Box>
+                        </Grid>
+                    )}
                 </Grid>
             </Container>
         </Box>

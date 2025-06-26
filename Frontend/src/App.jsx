@@ -22,6 +22,7 @@ import Inventory from './components/supplierComponets/Inventory.jsx';
 import SupplierOrders from './components/supplierComponets/Orders.jsx';
 import Revenue from './components/supplierComponets/Revenue.jsx';
 import Stats from './components/supplierComponets/Stats.jsx';
+import Home from './components/Home.jsx';
 
 // import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
 
@@ -35,7 +36,7 @@ function App() {
 
           <Routes>
             <Route path='/' element={<UserLayout />}>
-              <Route path="/" element={<AllMedicines />} />
+              <Route path="/" element={<Home/>} />
                     <Route path='/medicines' element={<AllMedicines />} />
                     <Route path="/medicine/:id" element={<SingleMedicine />} />
                     <Route path="/cart" element={<Cart />} />
@@ -47,11 +48,13 @@ function App() {
             </Route>
             <Route path='/admin' element={isAdmin ? <AdminLayout/> : <Login isAdmin={true}/>} >
               <Route path='/admin/medicines' element={<Medicines/>} />
+              <Route path='/admin/' element={<Medicines/>} />
               <Route path='/admin/medicines/add' element={<AddMedicine/>} />
               <Route path='/admin/medicines/edit/:id' element={<UpdateMedicine/>} />
               <Route path='/admin/orders' element={<AdminOrders/>} />
             </Route>
             <Route path='/supplier' element={isSupplier ? <SupplierLayout/> : <Login isSupplier={true}/>} >
+            <Route path='/supplier/' element={<Revenue/>} />
            <Route path='/supplier/inventory' element={<Inventory/>} />
            <Route path='/supplier/orders' element={<SupplierOrders/>} />
            <Route path='/supplier/revenue' element={<Revenue/>} />

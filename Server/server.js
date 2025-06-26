@@ -49,6 +49,17 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 
 // Public route for getting all medicines
+app.get('/api/medicines/categories', async (req, res) => {
+    try {
+        const categories = await Medicine.distinct('category');
+        res.json({
+            success: true,
+            categories
+        });
+    } catch (error) {
+        res.json({success: false, message: error.message});
+    }
+});
 app.get('/api/medicines', async (req, res) => {
     try {
         const medicines = await Medicine.find({});

@@ -8,7 +8,7 @@ const SupplierLayout = () => {
     return (
         <div>
             <SupplierNavbar />
-           
+            
                 <Outlet />
            
             <Footer />

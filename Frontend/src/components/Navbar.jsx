@@ -1,122 +1,188 @@
-import React, { useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { motion } from "motion/react"
-import { AnimatePresence } from "motion/react"
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import UserMenu from './UserMenu';
 import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { getCartCount } = useCart();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  const navigate = useNavigate();
-  return (
-    <div>
-      <nav className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 bg-blue-600 text-white shadow-md relative">
-        {/* Left: Hamburger Menu (Mobile) / Nav Links (Desktop) */}
-        <div className="flex items-center">
-          {/* Hamburger Menu for Mobile */}
-          <button
-            onClick={toggleMenu}
-            className="md:hidden p-2 hover:bg-blue-700 rounded-md transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
 
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-6 ml-4">
-            <Link to="/" className="text-white no-underline font-medium hover:text-blue-100 transition-colors">Home</Link>
-            <Link to="/medicines" className="text-white no-underline font-medium hover:text-blue-100 transition-colors">Medicines</Link>
-            <Link to="/about" className="text-white no-underline font-medium hover:text-blue-100 transition-colors">About</Link>
-            <Link to="/contact" className="text-white no-underline font-medium hover:text-blue-100 transition-colors">Contact</Link>
+  const isActive = (path) => location.pathname === path;
+
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      scrolled 
+        ? 'bg-white shadow-md' 
+        : 'bg-blue-600'
+    }`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          
+          {/* Left: Navigation Links */}
+          <div className="flex items-center space-x-8">
+            {/* Hamburger Menu for Mobile */}
+            <button
+              onClick={toggleMenu}
+              className={`lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors ${scrolled ? 'text-gray-800' : 'text-white'}`}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+
+            {/* Desktop Navigation Links */}
+            <div className="hidden lg:flex items-center space-x-8">
+              <NavLink to="/" isActive={isActive('/')} scrolled={scrolled}>
+                Home
+              </NavLink>
+              <NavLink to="/medicines" isActive={isActive('/medicines')} scrolled={scrolled}>
+                Medicines
+              </NavLink>
+              <NavLink to="/about" isActive={isActive('/about')} scrolled={scrolled}>
+                About
+              </NavLink>
+              <NavLink to="/contact" isActive={isActive('/contact')} scrolled={scrolled}>
+                Contact
+              </NavLink>
+            </div>
+          </div>
+
+          {/* Center: Logo */}
+          <div className="absolute left-1/2 transform -translate-x-1/2">
+            <span 
+              className={`font-bold text-2xl tracking-wider cursor-pointer transition-colors ${
+                scrolled ? 'text-gray-800' : 'text-white'
+              }`}
+              onClick={() => navigate("/")}
+            >
+              MediRural
+            </span>
+          </div>
+
+          {/* Right: Actions */}
+          <div className="flex items-center space-x-1">
+            {/* Search Icon */}
+            <button
+              className={`p-1 rounded-full transition-colors ${
+                scrolled 
+                  ? 'hover:bg-gray-100 text-gray-700' 
+                  : 'hover:bg-white/10 text-white'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+            
+            {/* Cart Icon */}
+            <Link to="/cart">
+              <div
+                className={`relative p-2 rounded-lg transition-colors ${
+                  scrolled 
+                    ? 'hover:bg-gray-100 text-gray-700' 
+                    : 'hover:bg-white/10 text-white'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                {/* Cart Badge */}
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                    {getCartCount()}
+                  </span>
+                )}
+              </div>
+            </Link>
+            
+            {/* User Menu */}
+            <UserMenu scrolled={scrolled} />
           </div>
         </div>
+      </div>
 
-        {/* Center: Logo - Absolutely centered */}
-        <div className="absolute left-1/2 transform -translate-x-1/2">
-          <span className="font-bold text-xl sm:text-2xl tracking-wider text-white cursor-pointer" onClick={() => navigate("/")}>
-            MediRural
-          </span>
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden bg-white shadow-lg border-t border-gray-200">
+          <div className="px-4 py-6 space-y-4">
+            <MobileNavLink to="/" isActive={isActive('/')} onClick={toggleMenu}>
+              Home
+            </MobileNavLink>
+            <MobileNavLink to="/medicines" isActive={isActive('/medicines')} onClick={toggleMenu}>
+              Medicines
+            </MobileNavLink>
+            <MobileNavLink to="/about" isActive={isActive('/about')} onClick={toggleMenu}>
+              About
+            </MobileNavLink>
+            <MobileNavLink to="/contact" isActive={isActive('/contact')} onClick={toggleMenu}>
+              Contact
+            </MobileNavLink>
+          </div>
         </div>
-
-        {/* Right: Icons */}
-        <div className="flex items-center space-x-3 sm:space-x-4">
-          {/* Search Icon */}
-          <span className="cursor-pointer flex items-center hover:text-blue-100 transition-colors">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </span>
-          
-          {/* Cart Icon */}
-          <Link to="/cart" className="cursor-pointer flex items-center hover:text-blue-100 transition-colors relative">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
-            {/* Cart Badge - shows number of items */}
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              {getCartCount()}
-            </span>
-          </Link>
-          
-          {/* User Menu */}
-          <UserMenu />
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              key="mobile-menu"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.35, ease: "easeInOut" }}
-              className="md:hidden absolute top-full left-2 right-2 mt-2 bg-blue-600/60 backdrop-blur-md rounded-xl shadow-2xl z-50 "
-            >
-              <div className="flex flex-col px-6 py-5 gap-4">
-                <Link
-                  to="/"
-                  className="text-white font-semibold text-lg hover:text-blue-200 transition duration-200"
-                >
-                  Home
-                </Link>
-                <Link
-                  to="/medicines"
-                  className="text-white font-semibold text-lg hover:text-blue-200 transition duration-200"
-                >
-                  Medicines
-                </Link>
-                <Link
-                  to="/about"
-                  className="text-white font-semibold text-lg hover:text-blue-200 transition duration-200"
-                >
-                  About
-                </Link>
-                <Link
-                  to="/contact"
-                  className="text-white font-semibold text-lg hover:text-blue-200 transition duration-200"
-                >
-                  Contact
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
-    </div>
+      )}
+    </nav>
   )
 }
+
+// NavLink Component for Desktop with animated underline
+const NavLink = ({ to, children, isActive, scrolled }) => (
+  <Link to={to}>
+    <div
+      className={`relative font-medium transition-colors ${
+        scrolled ? 'text-gray-700' : 'text-white'
+      }`}
+    >
+      {children}
+      {/* Animated underline */}
+      <div className="absolute -bottom-1 left-0 right-0 h-0.5">
+        <div 
+          className={`h-full rounded-full transition-all duration-300 ease-out ${
+            scrolled ? 'bg-blue-600' : 'bg-white'
+          }`}
+          style={{
+            transform: isActive ? 'scaleX(1)' : 'scaleX(0)',
+            transformOrigin: 'left'
+          }}
+        />
+      </div>
+    </div>
+  </Link>
+);
+
+// Mobile NavLink Component
+const MobileNavLink = ({ to, children, isActive, onClick }) => (
+  <Link to={to} onClick={onClick}>
+    <div
+      className={`py-3 px-4 rounded-lg font-medium transition-colors ${
+        isActive 
+          ? 'bg-blue-600 text-white' 
+          : 'text-gray-700 hover:bg-gray-100'
+      }`}
+    >
+      {children}
+    </div>
+  </Link>
+);
 
 export default Navbar
 

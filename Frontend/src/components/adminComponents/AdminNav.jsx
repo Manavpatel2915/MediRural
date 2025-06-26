@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Menu, X, Shield, Package, ShoppingCart, Users } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom'
+import UserMenu from '../UserMenu';
 const AdminNav = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const navigate = (path) => {
-    console.log(`Navigating to: ${path}`);
-    // In your actual app, this would be useNavigate() from react-router-dom
-  };
+const navigate = useNavigate();
 
   const navItems = [
     { to: '/admin/medicines', label: 'Medicines', icon: Package },
@@ -85,7 +83,7 @@ const AdminNav = () => {
           <div className="flex items-center">
             {/* Mock UserMenu component */}
             <div className="bg-white/10 p-2 rounded-lg hover:bg-white/20 transition-colors duration-200">
-              <Users className="w-6 h-6" />
+              <UserMenu />
             </div>
           </div>
         </div>

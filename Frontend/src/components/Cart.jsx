@@ -145,7 +145,20 @@ export default function Cart() {
                         >
                             <ArrowBackIcon />
                         </IconButton>
-                        <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: '#1a365d' }}>
+                        <Typography variant="h4" component="h1" sx={{
+                            fontSize: {
+                                xs : '1.4rem',
+                                sm : '2rem',
+                                md : '2.5rem',
+                                lg : '3rem',
+                                xl : '3.5rem',
+                            },/* text-4xl (base) */
+                            fontWeight: 900, /* font-black */
+                            color: '#0f172a', /* text-slate-900 */
+                            lineHeight: 1, /* leading-none */
+                            letterSpacing: '-0.025em', 
+
+                        }}>
                             Shopping Cart ({items.length} items)
                         </Typography>
                     </Box>
