@@ -31,7 +31,7 @@ const Revenue = () => {
     const fetchRevenueData = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:5000/api/orders/supplier/revenue?period=${selectedPeriod}`, {
+            const response = await axios.get(`https://medirural.onrender.com/api/orders/supplier/revenue?period=${selectedPeriod}`, {
                 withCredentials: true
             });
             setRevenueData(response.data);

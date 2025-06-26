@@ -12,7 +12,7 @@ const Medicines = () => {
   const navigate = useNavigate()
   const fetchMedicines = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/medicines/');
+      const response = await axios.get('https://medirural.onrender.com/api/medicines/');
       if (response.data.success) {
         setMedicines(response.data.medicines);
       } else {
@@ -54,7 +54,7 @@ const Medicines = () => {
     setLoading(true);
   
     try {
-      const res = await axios.delete(`http://localhost:5000/api/medicines/${id}`, {
+      const res = await axios.delete(`https://medirural.onrender.com/api/medicines/${id}`, {
         withCredentials: true
       });
   

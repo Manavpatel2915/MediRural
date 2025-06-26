@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/users/profile', {
+      const response = await axios.get('https://medirural.onrender.com/api/users/profile', {
         withCredentials: true
       });
       if (response.data.success) {
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const response = await axios.post('http://localhost:5000/api/users/login', 
+    const response = await axios.post('https://medirural.onrender.com/api/users/login', 
       { email, password },
       { withCredentials: true }
     );
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.get('http://localhost:5000/api/users/logout', {
+      await axios.get('https://medirural.onrender.com/api/users/logout', {
         withCredentials: true
       });
       setIsAuthenticated(false);

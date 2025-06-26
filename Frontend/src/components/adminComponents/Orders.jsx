@@ -33,7 +33,7 @@ const Orders = () => {
   useEffect(() => {
     let fetchOrders = async () => {
         try {
-            let res = await axios.get('http://localhost:5000/api/orders/', {withCredentials : true})
+            let res = await axios.get('https://medirural.onrender.com/api/orders/', {withCredentials : true})
             console.log(res.data.orders)
             console.log("working properly")
             setOrders(res.data.orders)
@@ -116,7 +116,7 @@ const Orders = () => {
       order._id === orderId ? { ...order, status: newStatus } : order
     ));
     try {
-      let res = await axios.put(`http://localhost:5000/api/orders/${orderId}`,
+      let res = await axios.put(`https://medirural.onrender.com/api/orders/${orderId}`,
         { status : newStatus} , {withCredentials : true}
       )
       if (res.data.success){

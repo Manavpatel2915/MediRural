@@ -96,7 +96,7 @@ export default function AllMedicines() {
     useEffect(() => {
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/medicines/');
+                const response = await axios.get('https://medirural.onrender.com/api/medicines/');
                 if (response.data.success) {
                     const medicineData = response.data.medicines;
                     setMedicines(medicineData);

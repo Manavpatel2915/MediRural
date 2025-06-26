@@ -88,7 +88,7 @@ const handlePlaceOrder = async () => {
 
     // ✅ Submit order
     const { data } = await axios.post(
-      'http://localhost:5000/api/orders',
+      'https://medirural.onrender.com/api/orders',
       orderData,
       {
         withCredentials: true,

@@ -14,7 +14,7 @@ const Inventory = () => {
     useEffect(() => {
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/medicines/');
+                const response = await axios.get('https://medirural.onrender.com/api/medicines/');
                 if (response.data.success) {
                     setMedicines(response.data.medicines);
                 } else {
@@ -33,7 +33,7 @@ const Inventory = () => {
         setUpdatingStock(prev => ({ ...prev, [medicineId]: true }));
         try {
             console.log('Updating stock for medicine:', medicineId, 'to:', newStock);
-            const response = await axios.patch(`http://localhost:5000/api/medicines/${medicineId}`, {
+            const response = await axios.patch(`https://medirural.onrender.com/api/medicines/${medicineId}`, {
                 stock: newStock
             });
             

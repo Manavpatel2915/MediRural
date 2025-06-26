@@ -23,7 +23,7 @@ import SupplierOrders from './components/supplierComponets/Orders.jsx';
 import Revenue from './components/supplierComponets/Revenue.jsx';
 import Stats from './components/supplierComponets/Stats.jsx';
 import Home from './components/Home.jsx';
-
+import ScrollToTop from './components/ScrollToTop.jsx';
 // import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
 
 function App() {
@@ -33,7 +33,7 @@ function App() {
     
       <CartProvider>
         <Router>
-
+          <ScrollToTop />
           <Routes>
             <Route path='/' element={<UserLayout />}>
               <Route path="/" element={<Home/>} />

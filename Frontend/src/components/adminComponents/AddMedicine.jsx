@@ -43,7 +43,7 @@ export default function AddMedicine({details}) {
       console.log("Sending data:", cleanedData); // optional for debugging
 
       const res = await axios.post(
-        'http://localhost:5000/api/medicines',
+        'https://medirural.onrender.com/api/medicines',
         { medicine: cleanedData },
         { withCredentials: true }
       );

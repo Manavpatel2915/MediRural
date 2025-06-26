@@ -13,7 +13,7 @@ const Orders = () => {
         const fetchOrders = async () => {
             try {
                 // Use the supplier-specific endpoint that filters by pincode
-                const response = await axios.get('http://localhost:5000/api/orders/supplier', { withCredentials: true });
+                const response = await axios.get('https://medirural.onrender.com/api/orders/supplier', { withCredentials: true });
                 setOrders(response.data.orders);
                 setSupplierPincode(response.data.supplierPincode);
                 setLoading(false);
@@ -42,7 +42,7 @@ const Orders = () => {
     
     const handleUpdateStatus = async (id, newStatus) => {
         try {
-            const response = await axios.put(`http://localhost:5000/api/orders/${id}`, { status: newStatus }, { withCredentials: true });
+            const response = await axios.put(`https://medirural.onrender.com/api/orders/${id}`, { status: newStatus }, { withCredentials: true });
             setOrders(orders.map((order) => order._id === id ? { ...order, status: newStatus } : order));
             toast.success('Status updated successfully');
         } catch (error) {

@@ -18,7 +18,7 @@ const Home = () => {
 
   useEffect(() => {
     let fetchCategories = async () => {
-      let response = await axios.get("http://localhost:5000/api/medicines/categories");
+      let response = await axios.get("https://medirural.onrender.com/api/medicines/categories");
       setCategories(response.data.categories);
     }
     fetchCategories();

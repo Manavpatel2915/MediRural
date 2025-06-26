@@ -51,7 +51,7 @@ const Register = ({ onClose }) => {
     try {
       
 
-      const response = await axios.post('http://localhost:5000/api/users/register', {
+      const response = await axios.post('https://medirural.onrender.com/api/users/register', {
         ...formData,
         confirmPassword: undefined
       }, {

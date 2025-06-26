@@ -32,7 +32,7 @@ export default function UpdateMedicine() {
   useEffect(() => {
     const fetchMedicine = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/medicines/${id}`, {
+        const res = await axios.get(`https://medirural.onrender.com/api/medicines/${id}`, {
           withCredentials: true
         });
         if (res.data.success) {
@@ -79,7 +79,7 @@ export default function UpdateMedicine() {
       };
 
       const res = await axios.put(
-        `http://localhost:5000/api/medicines/${id}`,
+        `https://medirural.onrender.com/api/medicines/${id}`,
         { medicine: updated },
         { withCredentials: true }
       );
