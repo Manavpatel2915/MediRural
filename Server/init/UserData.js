@@ -5,7 +5,6 @@ const hashPassword = async (password)=>{
     return password;
 }
 
-
 const userData = [
     {
         name: "vaibhav patil",
@@ -33,7 +32,73 @@ const userData = [
         },
         role:"admin"
     },
-
+    // Supplier user
+    {
+        name: "vaibhav patil supplier",
+        email: "patil.supplier@medirural.com",
+        password: "123456",
+        phone: "1234567890",
+        address:{
+            street :"Admin Office",
+            city :"surat",
+            state :"gujarat",
+            pincode: "395001"
+        },
+        role: "supplier"
+    },
+    {
+        name: "Patel Manav supplier",
+        email: "patel.supplier@medirural.com",
+        password: "123456",
+        phone: "1234567890",
+        address:{
+            street :"Admin Office",
+            city :"surat",
+            state :"gujarat",
+            pincode: "395001"
+        },
+        role: "supplier"
+    },
+    // Customer users for testing orders
+    {
+        name: "John Customer",
+        email: "john@example.com",
+        password: "123456",
+        phone: "9876543210",
+        address: {
+            street: "Customer Street",
+            city: "surat",
+            state: "gujarat",
+            pincode: "395001"
+        },
+        role: "customer"
+    },
+    {
+        name: "Jane Customer",
+        email: "jane@example.com",
+        password: "123456",
+        phone: "9876543211",
+        address: {
+            street: "Customer Avenue",
+            city: "surat",
+            state: "gujarat",
+            pincode: "395001"
+        },
+        role: "customer"
+    },
+    {
+        name: "Bob Customer",
+        email: "bob@example.com",
+        password: "123456",
+        phone: "9876543212",
+        address: {
+            street: "Customer Road",
+            city: "surat",
+            state: "gujarat",
+            pincode: "395001"
+        },
+        role: "customer"
+    }
 ];
 
 module.exports = userData; 

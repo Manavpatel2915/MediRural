@@ -4,6 +4,7 @@ import axios from 'axios';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+  const [isSupplier, setIsSupplier] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin , setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
@@ -23,6 +24,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         setUser(response.data.user);
         setIsAdmin(response.data.user.role === 'admin' ? true : false)
+        setIsSupplier(response.data.user.role==='supplier' ? true : false)
       }
     } catch (error) {
       setIsAuthenticated(false);
@@ -62,6 +64,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     isAuthenticated,
     isAdmin,
+    isSupplier,
     user,
     loading,
     login,

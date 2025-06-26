@@ -1,29 +1,32 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AllMedicines from './components/AllMedicines.jsx';
 import SingleMedicine from './components/singleMedicine.jsx';
-import Navbar from './components/Navbar.jsx';
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx';
-import { Box } from '@mui/material';
 import './App.css';
-import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
-import Footer from './components/Footer.jsx';
 import About from './components/About.jsx';
 import Contact from './components/Contact.jsx';
 import Cart from './components/Cart.jsx';
 import Checkout from './components/Checkout.jsx';
-import UserLayout from './layout/userLayout.jsx'; 
-import AdminLayout from './layout/adminLayout.jsx';
+import UserLayout from './layout/UserLayout.jsx'; 
+import AdminLayout from './layout/AdminLayout.jsx';
+import SupplierLayout from './layout/SupplierLayout.jsx';
 import Medicines from './components/adminComponents/Medicines.jsx';
 import { useAuth } from './context/AuthContext';
 import AddMedicine from './components/adminComponents/AddMedicine.jsx';
 import UpdateMedicine from './components/adminComponents/UpdateMedicine.jsx';
-import Orders from './components/adminComponents/Orders.jsx'
-function App() {
+import AdminOrders from './components/adminComponents/Orders.jsx';
+import Inventory from './components/supplierComponets/Inventory.jsx';
+import SupplierOrders from './components/supplierComponets/Orders.jsx';
+import Revenue from './components/supplierComponets/Revenue.jsx';
+import Stats from './components/supplierComponets/Stats.jsx';
 
-  const { user, isAdmin } = useAuth();
+// import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
+
+function App() {
+  const { user, isAdmin, isSupplier } = useAuth();
   
   return (
     
@@ -46,7 +49,13 @@ function App() {
               <Route path='/admin/medicines' element={<Medicines/>} />
               <Route path='/admin/medicines/add' element={<AddMedicine/>} />
               <Route path='/admin/medicines/edit/:id' element={<UpdateMedicine/>} />
-              <Route path='/admin/orders' element={<Orders/>} />
+              <Route path='/admin/orders' element={<AdminOrders/>} />
+            </Route>
+            <Route path='/supplier' element={isSupplier ? <SupplierLayout/> : <Login isSupplier={true}/>} >
+           <Route path='/supplier/inventory' element={<Inventory/>} />
+           <Route path='/supplier/orders' element={<SupplierOrders/>} />
+           <Route path='/supplier/revenue' element={<Revenue/>} />
+           <Route path='/supplier/stats' element={<Stats/>} />
             </Route>
           </Routes>
             
