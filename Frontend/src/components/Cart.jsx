@@ -126,7 +126,12 @@ export default function Cart() {
     }
 
     return (
-        <Box sx={{ backgroundColor: '#fafbfc', minHeight: '90vh', py: 3 }}>
+        <Box sx={{
+            background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #d1fae5 100%)',
+            minHeight: '90vh',
+            py: 3,
+            borderRadius : '12px',
+        }}>
             <Container maxWidth="lg">
                 {/* Header */}
                 <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -136,10 +141,10 @@ export default function Cart() {
                             sx={{ 
                                 mr: 2,
                                 backgroundColor: 'white',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                boxShadow: '0 2px 4px rgba(16,185,129,0.07)',
                                 '&:hover': {
                                     backgroundColor: 'white',
-                                    boxShadow: '0 4px 6px rgba(0,0,0,0.15)',
+                                    boxShadow: '0 4px 6px rgba(59,130,246,0.12)',
                                 }
                             }}
                         >
@@ -152,21 +157,19 @@ export default function Cart() {
                                 md : '2.5rem',
                                 lg : '3rem',
                                 xl : '3.5rem',
-                            },/* text-4xl (base) */
-                            fontWeight: 900, /* font-black */
-                            color: '#0f172a', /* text-slate-900 */
-                            lineHeight: 1, /* leading-none */
-                            letterSpacing: '-0.025em', 
-
+                            },
+                            fontWeight: 900,
+                            color: '#0f172a',
+                            lineHeight: 1,
+                            letterSpacing: '-0.025em',
                         }}>
                             Shopping Cart ({items.length} items)
                         </Typography>
                     </Box>
                     <Button
                         variant="outlined"
-                        color="error"
+                        sx={{ textTransform: 'none', borderColor: '#e11d48', color: '#e11d48', '&:hover': { borderColor: '#be123c', background: '#fef2f2', color: '#be123c' } }}
                         onClick={handleClearCart}
-                        sx={{ textTransform: 'none' }}
                     >
                         Clear Cart
                     </Button>
@@ -176,7 +179,7 @@ export default function Cart() {
                     {/* Cart Items */}
                     <Grid item xs={12} md={8}>
                         {items.map((item) => (
-                            <StyledCard key={item.medicine._id}>
+                            <StyledCard key={item.medicine._id} sx={{ backgroundColor: 'rgba(255,255,255,0.95)', border: '1px solid #e0e7ef' }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <Grid container spacing={2} alignItems="center">
                                         <Grid item xs={12} sm={3}>
@@ -187,18 +190,19 @@ export default function Cart() {
                                                 sx={{
                                                     height: 120,
                                                     borderRadius: '8px',
-                                                    objectFit: 'cover'
+                                                    objectFit: 'cover',
+                                                    background: '#f8fafc',
                                                 }}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
-                                            <Typography variant="h6" component="h2" sx={{ fontWeight: 600, mb: 1 }}>
+                                            <Typography variant="h6" component="h2" sx={{ fontWeight: 600, mb: 1, color: '#1e293b' }}>
                                                 {item.medicine.name}
                                             </Typography>
-                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                            <Typography variant="body2" sx={{ mb: 1, color: '#64748b' }}>
                                                 {item.medicine.description}
                                             </Typography>
-                                            <Typography variant="h6" color="primary" sx={{ fontWeight: 600 }}>
+                                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#2563eb' }}>
                                                 ₹{item.price}
                                             </Typography>
                                         </Grid>
@@ -211,7 +215,7 @@ export default function Cart() {
                                                     >
                                                         <RemoveIcon fontSize="small" />
                                                     </QuantityButton>
-                                                    <Typography variant="body1" sx={{ minWidth: '30px', textAlign: 'center' }}>
+                                                    <Typography variant="body1" sx={{ minWidth: '30px', textAlign: 'center', color: '#0f172a' }}>
                                                         {item.quantity}
                                                     </Typography>
                                                     <QuantityButton
@@ -221,11 +225,11 @@ export default function Cart() {
                                                         <AddIcon fontSize="small" />
                                                     </QuantityButton>
                                                 </Box>
-                                                <Typography variant="body2" color="text.secondary">
+                                                <Typography variant="body2" sx={{ color: '#64748b' }}>
                                                     Total: ₹{item.price * item.quantity}
                                                 </Typography>
                                                 <IconButton
-                                                    color="error"
+                                                    sx={{ color: '#e11d48', '&:hover': { color: '#be123c', background: '#fef2f2' } }}
                                                     onClick={() => handleRemoveItem(item.medicine._id)}
                                                     size="small"
                                                 >
@@ -241,24 +245,23 @@ export default function Cart() {
 
                     {/* Order Summary */}
                     <Grid item xs={12} md={4}>
-                        <Paper elevation={0} sx={{ p: 3, borderRadius: '12px', backgroundColor: 'white', border: '1px solid #e0e0e0' }}>
-                            <Typography variant="h5" component="h2" sx={{ fontWeight: 600, mb: 3 }}>
+                        <Paper elevation={0} sx={{ p: 3, borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.95)', border: '1px solid #e0e7ef', boxShadow: '0 4px 20px rgba(16,185,129,0.07)' }}>
+                            <Typography variant="h5" component="h2" sx={{ fontWeight: 600, mb: 3, color: '#0f172a' }}>
                                 Order Summary
                             </Typography>
-                            
                             <Box sx={{ mb: 2 }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                    <Typography variant="body1">Subtotal:</Typography>
-                                    <Typography variant="body1">₹{getCartTotal()}</Typography>
+                                    <Typography variant="body1" sx={{ color: '#334155' }}>Subtotal:</Typography>
+                                    <Typography variant="body1" sx={{ color: '#334155' }}>₹{getCartTotal()}</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                    <Typography variant="body1">Shipping:</Typography>
-                                    <Typography variant="body1" color="success.main">Free</Typography>
+                                    <Typography variant="body1" sx={{ color: '#334155' }}>Shipping:</Typography>
+                                    <Typography variant="body1" sx={{ color: '#059669' }}>Free</Typography>
                                 </Box>
                                 <Divider sx={{ my: 2 }} />
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <Typography variant="h6" sx={{ fontWeight: 600 }}>Total:</Typography>
-                                    <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#0f172a' }}>Total:</Typography>
+                                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#2563eb' }}>
                                         ₹{getCartTotal()}
                                     </Typography>
                                 </Box>
@@ -266,18 +269,38 @@ export default function Cart() {
 
                             <StyledButton
                                 variant="contained"
-                                color="primary"
+                                sx={{
+                                    background: 'linear-gradient(90deg, #2563eb 0%, #4f46e5 100%)',
+                                    color: 'white',
+                                    fontWeight: 700,
+                                    letterSpacing: '0.01em',
+                                    boxShadow: '0 2px 8px rgba(59,130,246,0.08)',
+                                    '&:hover': {
+                                        background: 'linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%)',
+                                        color: 'white',
+                                    },
+                                    mb: 2,
+                                }}
                                 fullWidth
                                 size="large"
                                 onClick={handleCheckout}
-                                sx={{ mb: 2 }}
                             >
                                 Proceed to Checkout
                             </StyledButton>
-                            
+
                             <StyledButton
                                 variant="outlined"
-                                color="primary"
+                                sx={{
+                                    borderColor: '#2563eb',
+                                    color: '#2563eb',
+                                    fontWeight: 700,
+                                    letterSpacing: '0.01em',
+                                    '&:hover': {
+                                        borderColor: '#1d4ed8',
+                                        background: '#eff6ff',
+                                        color: '#1d4ed8',
+                                    },
+                                }}
                                 fullWidth
                                 onClick={handleBack}
                             >
