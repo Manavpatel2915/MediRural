@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 const bcrypt = require('bcryptjs')
 const hashPassword = async (password)=>{
     const salt = await bcrypt.genSalt(10);
@@ -7,8 +5,6 @@ const hashPassword = async (password)=>{
     return password;
 }
 
-
->>>>>>> 8560b1020a198bfd57e8ba4a88d03f1e03b0cf51
 const userData = [
     {
         name: "vaibhav patil",
@@ -36,7 +32,6 @@ const userData = [
         },
         role:"admin"
     },
-<<<<<<< HEAD
     // Supplier user
     {
         name: "vaibhav patil supplier",
@@ -50,7 +45,8 @@ const userData = [
             pincode: "395001"
         },
         role: "supplier"
-    },{
+    },
+    {
         name: "Patel Manav supplier",
         email: "patel.supplier@medirural.com",
         password: "123456",
@@ -62,10 +58,47 @@ const userData = [
             pincode: "395001"
         },
         role: "supplier"
+    },
+    // Customer users for testing orders
+    {
+        name: "John Customer",
+        email: "john@example.com",
+        password: "123456",
+        phone: "9876543210",
+        address: {
+            street: "Customer Street",
+            city: "surat",
+            state: "gujarat",
+            pincode: "395001"
+        },
+        role: "customer"
+    },
+    {
+        name: "Jane Customer",
+        email: "jane@example.com",
+        password: "123456",
+        phone: "9876543211",
+        address: {
+            street: "Customer Avenue",
+            city: "surat",
+            state: "gujarat",
+            pincode: "395001"
+        },
+        role: "customer"
+    },
+    {
+        name: "Bob Customer",
+        email: "bob@example.com",
+        password: "123456",
+        phone: "9876543212",
+        address: {
+            street: "Customer Road",
+            city: "surat",
+            state: "gujarat",
+            pincode: "395001"
+        },
+        role: "customer"
     }
-=======
->>>>>>> 8560b1020a198bfd57e8ba4a88d03f1e03b0cf51
-
 ];
 
 module.exports = userData; 

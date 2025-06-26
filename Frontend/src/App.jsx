@@ -21,6 +21,7 @@ import AdminOrders from './components/adminComponents/Orders.jsx';
 import Inventory from './components/supplierComponets/Inventory.jsx';
 import SupplierOrders from './components/supplierComponets/Orders.jsx';
 import Revenue from './components/supplierComponets/Revenue.jsx';
+import Stats from './components/supplierComponets/Stats.jsx';
 
 // import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
 
@@ -54,6 +55,7 @@ function App() {
            <Route path='/supplier/inventory' element={<Inventory/>} />
            <Route path='/supplier/orders' element={<SupplierOrders/>} />
            <Route path='/supplier/revenue' element={<Revenue/>} />
+           <Route path='/supplier/stats' element={<Stats/>} />
             </Route>
           </Routes>
             

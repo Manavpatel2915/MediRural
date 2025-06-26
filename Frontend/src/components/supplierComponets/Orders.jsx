@@ -7,19 +7,24 @@ const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [supplierPincode, setSupplierPincode] = useState('');
+    
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/orders', { withCredentials: true });
+                // Use the supplier-specific endpoint that filters by pincode
+                const response = await axios.get('http://localhost:5000/api/orders/supplier', { withCredentials: true });
                 setOrders(response.data.orders);
+                setSupplierPincode(response.data.supplierPincode);
                 setLoading(false);
             } catch (error) {
-                setError(error.message);
+                setError(error.response?.data?.message || error.message);
                 setLoading(false);
             }
         };
         fetchOrders();
     }, []);
+    
     if (loading) {
         return <div className='flex justify-center items-center min-h-[200px] text-lg font-semibold'>Loading...</div>;
     }
@@ -27,8 +32,14 @@ const Orders = () => {
         return <div className='flex justify-center items-center min-h-[200px] text-red-600 font-semibold'>Error: {error}</div>;
     }
     if (orders.length === 0) {
-        return <div className='flex justify-center items-center min-h-[200px] text-gray-600 font-semibold'>No orders found</div>;
+        return (
+            <div className='flex flex-col justify-center items-center min-h-[200px] text-gray-600 font-semibold'>
+                <p>No orders found for your area</p>
+                <p className='text-sm text-gray-500 mt-2'>Pincode: {supplierPincode}</p>
+            </div>
+        );
     }
+    
     const handleUpdateStatus = async (id, newStatus) => {
         try {
             const response = await axios.put(`http://localhost:5000/api/orders/${id}`, { status: newStatus }, { withCredentials: true });
@@ -38,20 +49,25 @@ const Orders = () => {
             toast.error('Status update failed');
         }
     }
+    
     return (
         <div className="p-6 max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6 text-blue-700">All Orders</h1>
+            <div className="mb-6">
+                <h1 className="text-3xl font-bold text-blue-700">Area Orders</h1>
+                <p className="text-gray-600 mt-2">Showing orders for pincode: <span className="font-semibold text-blue-600">{supplierPincode}</span></p>
+            </div>
+            
             <div className="overflow-x-auto rounded-lg shadow">
                 <table className="min-w-full bg-white border border-gray-200">
                     <thead className="bg-blue-600 text-white">
                         <tr>
                             <th className="py-2 px-2 text-left">Order ID</th>
-                            
+                            <th className="py-2 px-2 text-left">Customer</th>
                             <th className="py-2 px-2 text-left">Created At</th>
                             <th className="py-2 px-2 text-left">Status</th>
                             <th className="py-2 px-2 text-left">Total Amount</th>
                             <th className="py-2 px-2 text-left">Payment Method</th>
-                            <th className="py-2 px-2 text-left">Address</th>
+                            <th className="py-2 px-2 text-left">Delivery Address</th>
                             <th className="py-2 px-2 text-left">Phone No</th>
                             <th className="py-2 px-2 text-left">Subscription</th>
                             <th className="py-2 px-2 text-left">Frequency</th>
@@ -62,8 +78,13 @@ const Orders = () => {
                         {orders.map((order) => (
                             <tr key={order._id} className="border-b hover:bg-blue-50 transition">
                                 <td className="py-2 px-2 text-left font-medium">{order._id}</td>
-                                
-                                <td className="py-2 px-2 text-left">{order.createdAt}</td>
+                                <td className="py-2 px-2 text-left">
+                                    <div>
+                                        <p className="font-medium">{order.user?.name || 'N/A'}</p>
+                                        <p className="text-sm text-gray-500">{order.user?.email || 'N/A'}</p>
+                                    </div>
+                                </td>
+                                <td className="py-2 px-2 text-left">{new Date(order.createdAt).toLocaleDateString()}</td>
                                 <td className="py-2 px-2 text-left">
                                     {/* Status badge with icon and dropdown */}
                                     <div className="flex items-center gap-2">
@@ -111,8 +132,14 @@ const Orders = () => {
                                     </div>
                                 </td>
                                 <td className="py-2 px-2 text-left">₹{order.totalAmount}</td>
-                                <td className="py-2 px-2 text-left">{order.paymentMethod}</td>
-                                <td className="py-2 px-2 text-left">{order.shipping?.address || "N/A"}</td>
+                                <td className="py-2 px-2 text-left">{order.paymentDetails?.paymentMethod || 'N/A'}</td>
+                                <td className="py-2 px-2 text-left">
+                                    <div className="text-sm">
+                                        <p>{order.shipping?.address || "N/A"}</p>
+                                        <p className="text-gray-500">{order.shipping?.city}, {order.shipping?.state}</p>
+                                        <p className="text-gray-500 font-medium">{order.shipping?.pincode}</p>
+                                    </div>
+                                </td>
                                 <td className="py-2 px-2 text-left">{order.shipping?.phone || "N/A"}</td>
                                 <td className="py-2 px-2 text-left">
                                     {order.isSubscription ? (
