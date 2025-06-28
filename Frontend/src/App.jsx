@@ -27,16 +27,7 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 // import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
 
 function App() {
-  const { user, isAdmin, isSupplier, loading, isAuthenticated, checkAuthStatus } = useAuth();
-  
-  // If user is authenticated but doesn't have user data, fetch it
-  React.useEffect(() => {
-    console.log('🔄 App useEffect triggered:', { isAuthenticated, user, loading });
-    if (isAuthenticated && !user && !loading) {
-      console.log('🔄 Triggering profile check...');
-      checkAuthStatus();
-    }
-  }, [isAuthenticated, user, loading, checkAuthStatus]);
+  const { user, isAdmin, isSupplier, loading } = useAuth();
   
   // Show loading spinner while checking authentication
   if (loading) {

@@ -17,7 +17,12 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     console.log('🔍 Checking auth status...');
+    console.log('🍪 Available cookies:', document.cookie);
+    
     try {
+      // Add a small delay to ensure cookie is set
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       const response = await axios.get('https://medirural.onrender.com/api/users/profile', {
         withCredentials: true
       });
@@ -33,6 +38,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('❌ Auth check error:', error.response?.status, error.response?.data);
+      console.log('🍪 Cookies after error:', document.cookie);
       setIsAuthenticated(false);
       setUser(null);
       setIsAdmin(false);
@@ -51,10 +57,34 @@ export const AuthProvider = ({ children }) => {
     );
     
     console.log('✅ Login response:', response.data);
+    console.log('🍪 Cookies after login:', document.cookie);
     
     if (response.data.success) {
+      // Add a delay to ensure cookie is set
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       setIsAuthenticated(true);
       console.log('🔐 Setting isAuthenticated to true');
+      
+      // Manually fetch profile data
+      try {
+        console.log('🔍 Manually fetching profile after login...');
+        const profileResponse = await axios.get('https://medirural.onrender.com/api/users/profile', {
+          withCredentials: true
+        });
+        
+        if (profileResponse.data.success) {
+          const userData = profileResponse.data.user;
+          setUser(userData);
+          setIsAdmin(userData.role === 'admin');
+          setIsSupplier(userData.role === 'supplier');
+          console.log('✅ Profile fetched successfully:', userData);
+        }
+      } catch (profileError) {
+        console.error('❌ Profile fetch failed after login:', profileError.response?.status, profileError.response?.data);
+        // Don't throw error here, login was successful
+      }
+      
       return response.data;
     }
     throw new Error(response.data.message || 'Login failed');
