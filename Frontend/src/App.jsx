@@ -31,7 +31,9 @@ function App() {
   
   // If user is authenticated but doesn't have user data, fetch it
   React.useEffect(() => {
+    console.log('🔄 App useEffect triggered:', { isAuthenticated, user, loading });
     if (isAuthenticated && !user && !loading) {
+      console.log('🔄 Triggering profile check...');
       checkAuthStatus();
     }
   }, [isAuthenticated, user, loading, checkAuthStatus]);

@@ -16,19 +16,23 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuthStatus = async () => {
+    console.log('🔍 Checking auth status...');
     try {
       const response = await axios.get('https://medirural.onrender.com/api/users/profile', {
         withCredentials: true
       });
+      console.log('✅ Profile response:', response.data);
+      
       if (response.data.success) {
         const userData = response.data.user;
         setIsAuthenticated(true);
         setUser(userData);
         setIsAdmin(userData.role === 'admin');
         setIsSupplier(userData.role === 'supplier');
+        console.log('🔍 Auth status updated:', { userData, isAdmin: userData.role === 'admin', isSupplier: userData.role === 'supplier' });
       }
     } catch (error) {
-      console.error('Auth check error:', error);
+      console.error('❌ Auth check error:', error.response?.status, error.response?.data);
       setIsAuthenticated(false);
       setUser(null);
       setIsAdmin(false);
@@ -39,13 +43,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
+    console.log('🔐 Login attempt with:', { email, password });
+    
     const response = await axios.post('https://medirural.onrender.com/api/users/login', 
       { email, password },
       { withCredentials: true }
     );
     
+    console.log('✅ Login response:', response.data);
+    
     if (response.data.success) {
       setIsAuthenticated(true);
+      console.log('🔐 Setting isAuthenticated to true');
       return response.data;
     }
     throw new Error(response.data.message || 'Login failed');
