@@ -46,18 +46,6 @@ export const AuthProvider = ({ children }) => {
     
     if (response.data.success) {
       setIsAuthenticated(true);
-      // Get user data immediately after login
-      const userResponse = await axios.get('https://medirural.onrender.com/api/users/profile', {
-        withCredentials: true
-      });
-      
-      if (userResponse.data.success) {
-        const userData = userResponse.data.user;
-        setUser(userData);
-        setIsAdmin(userData.role === 'admin');
-        setIsSupplier(userData.role === 'supplier');
-      }
-      
       return response.data;
     }
     throw new Error(response.data.message || 'Login failed');

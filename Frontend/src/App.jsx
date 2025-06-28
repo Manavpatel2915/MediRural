@@ -27,7 +27,14 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 // import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
 
 function App() {
-  const { user, isAdmin, isSupplier, loading } = useAuth();
+  const { user, isAdmin, isSupplier, loading, isAuthenticated, checkAuthStatus } = useAuth();
+  
+  // If user is authenticated but doesn't have user data, fetch it
+  React.useEffect(() => {
+    if (isAuthenticated && !user && !loading) {
+      checkAuthStatus();
+    }
+  }, [isAuthenticated, user, loading, checkAuthStatus]);
   
   // Show loading spinner while checking authentication
   if (loading) {
@@ -56,18 +63,18 @@ function App() {
                     <Route path="/contact" element={<Contact />} />
             </Route>
             <Route path='/admin' element={isAdmin ? <AdminLayout/> : <Login isAdmin={true}/>} >
-              <Route path='/admin/medicines' element={<Medicines/>} />
-              <Route path='/admin/' element={<Medicines/>} />
-              <Route path='/admin/medicines/add' element={<AddMedicine/>} />
-              <Route path='/admin/medicines/edit/:id' element={<UpdateMedicine/>} />
-              <Route path='/admin/orders' element={<AdminOrders/>} />
+              <Route index element={<Medicines/>} />
+              <Route path='medicines' element={<Medicines/>} />
+              <Route path='medicines/add' element={<AddMedicine/>} />
+              <Route path='medicines/edit/:id' element={<UpdateMedicine/>} />
+              <Route path='orders' element={<AdminOrders/>} />
             </Route>
             <Route path='/supplier' element={isSupplier ? <SupplierLayout/> : <Login isSupplier={true}/>} >
-            <Route path='/supplier/' element={<Revenue/>} />
-           <Route path='/supplier/inventory' element={<Inventory/>} />
-           <Route path='/supplier/orders' element={<SupplierOrders/>} />
-           <Route path='/supplier/revenue' element={<Revenue/>} />
-           <Route path='/supplier/stats' element={<Stats/>} />
+              <Route index element={<Revenue/>} />
+              <Route path='inventory' element={<Inventory/>} />
+              <Route path='orders' element={<SupplierOrders/>} />
+              <Route path='revenue' element={<Revenue/>} />
+              <Route path='stats' element={<Stats/>} />
             </Route>
           </Routes>
             

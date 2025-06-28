@@ -23,11 +23,22 @@ const Register = ({ onClose }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
+    if (name.includes('.')) {
+      // Handle nested fields like address.street
+      const [parent, child] = name.split('.');
+      setFormData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
       setFormData(prev => ({
         ...prev,
         [name]: value
       }));
-    
+    }
   };
 
   const handleSubmit = async (e) => {
