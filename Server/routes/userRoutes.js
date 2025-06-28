@@ -75,7 +75,7 @@ router.post('/login', async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path: '/'
         });   
@@ -98,7 +98,7 @@ router.get('/logout', auth, (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         path: '/'
     });
     res.json({ success: true, message: "Logged out successfully" });
@@ -108,6 +108,11 @@ router.get('/logout', auth, (req, res) => {
 router.get('/profile', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        
         res.json({
             success: true,
             user: {
@@ -118,6 +123,7 @@ router.get('/profile', auth, async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Profile error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });

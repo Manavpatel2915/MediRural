@@ -21,14 +21,18 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true
       });
       if (response.data.success) {
+        const userData = response.data.user;
         setIsAuthenticated(true);
-        setUser(response.data.user);
-        setIsAdmin(response.data.user.role === 'admin' ? true : false)
-        setIsSupplier(response.data.user.role==='supplier' ? true : false)
+        setUser(userData);
+        setIsAdmin(userData.role === 'admin');
+        setIsSupplier(userData.role === 'supplier');
       }
     } catch (error) {
+      console.error('Auth check error:', error);
       setIsAuthenticated(false);
       setUser(null);
+      setIsAdmin(false);
+      setIsSupplier(false);
     } finally {
       setLoading(false);
     }
@@ -42,7 +46,18 @@ export const AuthProvider = ({ children }) => {
     
     if (response.data.success) {
       setIsAuthenticated(true);
-      await checkAuthStatus(); // Get user data
+      // Get user data immediately after login
+      const userResponse = await axios.get('https://medirural.onrender.com/api/users/profile', {
+        withCredentials: true
+      });
+      
+      if (userResponse.data.success) {
+        const userData = userResponse.data.user;
+        setUser(userData);
+        setIsAdmin(userData.role === 'admin');
+        setIsSupplier(userData.role === 'supplier');
+      }
+      
       return response.data;
     }
     throw new Error(response.data.message || 'Login failed');
@@ -55,8 +70,15 @@ export const AuthProvider = ({ children }) => {
       });
       setIsAuthenticated(false);
       setUser(null);
+      setIsAdmin(false);
+      setIsSupplier(false);
     } catch (error) {
       console.error('Logout error:', error);
+      // Even if logout fails, reset local state
+      setIsAuthenticated(false);
+      setUser(null);
+      setIsAdmin(false);
+      setIsSupplier(false);
       throw error;
     }
   };

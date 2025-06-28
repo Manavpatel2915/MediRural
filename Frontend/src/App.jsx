@@ -27,7 +27,18 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 // import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
 
 function App() {
-  const { user, isAdmin, isSupplier } = useAuth();
+  const { user, isAdmin, isSupplier, loading } = useAuth();
+  
+  console.log('App render - Auth state:', { user, isAdmin, isSupplier, loading });
+  
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
   
   return (
     

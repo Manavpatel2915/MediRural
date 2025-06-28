@@ -27,17 +27,14 @@ const Login = ({ onClose , isAdmin , isSupplier }) => {
     setIsLoading(true);
 
     try {
+      console.log('Attempting login with:', { email: formData.email, isAdmin, isSupplier });
       await login(formData.email, formData.password);
       
-      // Close the modal if it exists
-      
-      
-      // Redirect to home page
-      console.log(from)
+      console.log('Login successful, navigating to:', from);
       navigate(from);
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.message || 'Login failed');
+      setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
