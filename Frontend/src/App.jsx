@@ -29,8 +29,6 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 function App() {
   const { user, isAdmin, isSupplier, loading } = useAuth();
   
-  console.log('App render - Auth state:', { user, isAdmin, isSupplier, loading });
-  
   // Show loading spinner while checking authentication
   if (loading) {
     return (
