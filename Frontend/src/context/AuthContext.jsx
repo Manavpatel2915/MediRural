@@ -16,17 +16,21 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuthStatus = async () => {
-    console.log('🔍 Checking auth status...');
-    console.log('🍪 Available cookies:', document.cookie);
-    
     try {
-      // Add a small delay to ensure cookie is set
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsAuthenticated(false);
+        setUser(null);
+        setIsAdmin(false);
+        setIsSupplier(false);
+        return;
+      }
       
       const response = await axios.get('https://medirural.onrender.com/api/users/profile', {
-        withCredentials: true
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
-      console.log('✅ Profile response:', response.data);
       
       if (response.data.success) {
         const userData = response.data.user;
@@ -34,11 +38,11 @@ export const AuthProvider = ({ children }) => {
         setUser(userData);
         setIsAdmin(userData.role === 'admin');
         setIsSupplier(userData.role === 'supplier');
-        console.log('🔍 Auth status updated:', { userData, isAdmin: userData.role === 'admin', isSupplier: userData.role === 'supplier' });
       }
     } catch (error) {
-      console.error('❌ Auth check error:', error.response?.status, error.response?.data);
-      console.log('🍪 Cookies after error:', document.cookie);
+      console.error('Auth check error:', error.response?.status, error.response?.data);
+      // Clear invalid token
+      localStorage.removeItem('token');
       setIsAuthenticated(false);
       setUser(null);
       setIsAdmin(false);
@@ -49,28 +53,22 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    console.log('🔐 Login attempt with:', { email, password });
-    
     const response = await axios.post('https://medirural.onrender.com/api/users/login', 
-      { email, password },
-      { withCredentials: true }
+      { email, password }
     );
     
-    console.log('✅ Login response:', response.data);
-    console.log('🍪 Cookies after login:', document.cookie);
-    
     if (response.data.success) {
-      // Add a delay to ensure cookie is set
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Store token in localStorage
+      localStorage.setItem('token', response.data.token);
       
       setIsAuthenticated(true);
-      console.log('🔐 Setting isAuthenticated to true');
       
-      // Manually fetch profile data
+      // Manually fetch profile data using token
       try {
-        console.log('🔍 Manually fetching profile after login...');
         const profileResponse = await axios.get('https://medirural.onrender.com/api/users/profile', {
-          withCredentials: true
+          headers: {
+            'Authorization': `Bearer ${response.data.token}`
+          }
         });
         
         if (profileResponse.data.success) {
@@ -78,10 +76,9 @@ export const AuthProvider = ({ children }) => {
           setUser(userData);
           setIsAdmin(userData.role === 'admin');
           setIsSupplier(userData.role === 'supplier');
-          console.log('✅ Profile fetched successfully:', userData);
         }
       } catch (profileError) {
-        console.error('❌ Profile fetch failed after login:', profileError.response?.status, profileError.response?.data);
+        console.error('Profile fetch failed after login:', profileError.response?.status, profileError.response?.data);
         // Don't throw error here, login was successful
       }
       
@@ -92,9 +89,19 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.get('https://medirural.onrender.com/api/users/logout', {
-        withCredentials: true
-      });
+      // Clear token from localStorage
+      localStorage.removeItem('token');
+      
+      // Try to logout from server (optional)
+      const token = localStorage.getItem('token');
+      if (token) {
+        await axios.get('https://medirural.onrender.com/api/users/logout', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      }
+      
       setIsAuthenticated(false);
       setUser(null);
       setIsAdmin(false);
@@ -102,6 +109,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Logout error:', error);
       // Even if logout fails, reset local state
+      localStorage.removeItem('token');
       setIsAuthenticated(false);
       setUser(null);
       setIsAdmin(false);

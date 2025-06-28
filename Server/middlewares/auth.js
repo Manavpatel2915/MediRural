@@ -1,7 +1,16 @@
 const jwt = require('jsonwebtoken')
 
 const auth = (req, res, next)=>{
-    const token = req.cookies.token;
+    // Check for token in Authorization header first
+    const authHeader = req.headers.authorization;
+    let token = null;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    } else {
+        // Fallback to cookie
+        token = req.cookies.token;
+    }
     
     if (!token) {
         return res.status(401).json({success: false, message: "Unauthorized access detected"})

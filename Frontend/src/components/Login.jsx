@@ -27,13 +27,10 @@ const Login = ({ onClose , isAdmin , isSupplier }) => {
     setIsLoading(true);
 
     try {
-      console.log('🚀 Login form submitted with:', formData);
       await login(formData.email, formData.password);
-      
-      console.log('🚀 Login successful, navigating to:', from);
       navigate(from);
     } catch (err) {
-      console.error('❌ Login error:', err);
+      console.error('Login error:', err);
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
