@@ -2,8 +2,10 @@ import React from 'react';
 import { useEffect, useState } from "react"
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Inventory = () => {
+    const { token } = useAuth();
     const [medicines, setMedicines] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,7 +16,11 @@ const Inventory = () => {
     useEffect(() => {
         const fetchMedicines = async () => {
             try {
-                const response = await axios.get('https://medirural.onrender.com/api/medicines/');
+                const response = await axios.get('https://medirural.onrender.com/api/medicines/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 if (response.data.success) {
                     setMedicines(response.data.medicines);
                 } else {
@@ -27,7 +33,7 @@ const Inventory = () => {
             }
         };
         fetchMedicines();
-    }, []);
+    }, [token]);
 
     const handleStockUpdate = async (medicineId, newStock) => {
         setUpdatingStock(prev => ({ ...prev, [medicineId]: true }));
@@ -35,6 +41,10 @@ const Inventory = () => {
             console.log('Updating stock for medicine:', medicineId, 'to:', newStock);
             const response = await axios.patch(`https://medirural.onrender.com/api/medicines/${medicineId}`, {
                 stock: newStock
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             
             console.log('Response:', response.data);

@@ -17,7 +17,7 @@ const steps = [
 
 export default function Checkout() {
   const { items, clearCart, getCartTotal } = useCart();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const [step, setStep] = useState(0);
   const [shipping, setShipping] = useState({
@@ -89,7 +89,7 @@ const handlePlaceOrder = async () => {
     // ✅ Submit order
     const response = await axios.post('https://medirural.onrender.com/api/orders', orderData, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${token}`
       }
     });
 

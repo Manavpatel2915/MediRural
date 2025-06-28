@@ -20,7 +20,10 @@ import {
 } from 'lucide-react';
 import axios from 'axios'
 import {motion} from 'framer-motion'
+import { useAuth } from '../../context/AuthContext';
+
 const Orders = () => {
+  const { token } = useAuth();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,7 +36,6 @@ const Orders = () => {
   useEffect(() => {
     let fetchOrders = async () => {
         try {
-            const token = localStorage.getItem('token');
             let res = await axios.get('https://medirural.onrender.com/api/orders/', {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -49,7 +51,7 @@ const Orders = () => {
     }
 
     fetchOrders();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     let filtered = orders.filter(order => {
@@ -121,7 +123,6 @@ const Orders = () => {
       order._id === orderId ? { ...order, status: newStatus } : order
     ));
     try {
-      const token = localStorage.getItem('token');
       let res = await axios.put(`https://medirural.onrender.com/api/orders/${orderId}`,
         { status : newStatus} , {
             headers: {

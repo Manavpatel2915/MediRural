@@ -3,20 +3,30 @@ import axios from 'axios'
 import { Edit, Eye, Filter, IndianRupee, Package, Plus, Search, Trash2 } from 'lucide-react'
 import SearchFilterBar from './SearchFilterBar';
 import { useNavigate} from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+
 const Medicines = () => {
+  const { token } = useAuth();
   const [medicines, setMedicines] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCat , setSelectedCat] = useState('all');
   const [searchTerm , setSearchTerm] = useState('')
 
   const navigate = useNavigate()
-  const fetchMedicines = async () => {
+  const fetchMedicines = async (search = '', category = 'all') => {
     try {
-      const response = await axios.get('https://medirural.onrender.com/api/medicines', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const params = new URLSearchParams();
+      if (search && search.trim()) {
+        params.append('search', search.trim());
+      }
+      if (category && category !== 'all') {
+        params.append('category', category);
+      }
+      
+      const url = `https://medirural.onrender.com/api/medicines${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await axios.get(url);
+      
       if (response.data.success) {
         setMedicines(response.data.medicines);
       } else {
@@ -28,19 +38,13 @@ const Medicines = () => {
       setLoading(false);
     }
   };
+  
   useEffect(() => {
     fetchMedicines();
   }, []);
-  useEffect(() => {
-    fetchMedicines();
-  }, [medicines]);
   
-  //filtered medicines based on selected category
-  const filteredMedicines = medicines.filter(medicine => medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) && (selectedCat === 'all' || medicine.category === selectedCat))
-
   //getting all the categories
   const category = ['all', ...new Set(medicines.map(medicine=>medicine.category))]
-
 
   let stockIndicator = (price) =>{
     if (price <= 0) return 'Out of stock'
@@ -59,7 +63,9 @@ const Medicines = () => {
   
     try {
       const res = await axios.delete(`https://medirural.onrender.com/api/medicines/${id}`, {
-        withCredentials: true
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
   
       if (res.data.success) {
@@ -76,9 +82,33 @@ const Medicines = () => {
     }
   };
 
-  
+  // Update search and category handlers
+  const handleSearchChange = (newSearchTerm) => {
+    setSearchTerm(newSearchTerm);
+    fetchMedicines(newSearchTerm, selectedCat);
+  };
 
-  
+  const handleCategoryChange = (newCategory) => {
+    setSelectedCat(newCategory);
+    fetchMedicines(searchTerm, newCategory);
+  };
+
+  // Add loading and error states
+  if (loading) {
+    return (
+      <div className='min-h-screen p-6 bg-gray-50 flex justify-center items-center'>
+        <div className='text-lg font-semibold'>Loading medicines...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className='min-h-screen p-6 bg-gray-50 flex justify-center items-center'>
+        <div className='text-red-600 font-semibold'>Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className='min-h-screen p-6 bg-gray-50'>
@@ -102,17 +132,19 @@ const Medicines = () => {
 
       {/* filter */}
 
-      <SearchFilterBar searchTerm={searchTerm}
-      selectedCat={selectedCat} 
-      setSearchTerm={setSearchTerm}
-      setSelectedCat={setSelectedCat}
-      category={category}/>
+      <SearchFilterBar 
+        searchTerm={searchTerm}
+        selectedCategory={selectedCat} 
+        setSearchTerm={handleSearchChange}
+        setSelectedCategory={handleCategoryChange}
+        categories={category}
+      />
 
 
       <div className='flex flex-col items-center'>
-        {filteredMedicines.map((medicine) => {
+        {medicines.map((medicine) => {
           return (
-            <div key={medicine._id} className='flex h-28 w-full bg-white m-2 rounded-md px-4 border border-gray-400 items-center justify-between'>
+            <div key={medicine._id} className='flex h-28 w-full bg-white m-2 rounded-md px-4 border border-gray-400 items-center justify-between overflow-auto'>
               <div className='flex items-center'>
                 <div className='h-16  w-16 mr-4'>
                   <img className='h-full w-full object-cover rounded-lg' src={medicine.imageUrl} alt={medicine.name} />

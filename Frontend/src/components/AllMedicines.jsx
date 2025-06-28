@@ -83,6 +83,7 @@ const StockChip = styled(Chip)(({ theme }) => ({
 export default function AllMedicines() {
     const [medicines, setMedicines] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchLoading, setSearchLoading] = useState(false);
     const [error, setError] = useState(null);
     const [categories, setCategories] = useState(['All']);
     const navigate = useNavigate();
@@ -93,29 +94,66 @@ export default function AllMedicines() {
     const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [selectedCategory, setSelectedCategory] = useState(initialCategory);
 
-    useEffect(() => {
-        const fetchMedicines = async () => {
-            try {
-                const response = await axios.get('https://medirural.onrender.com/api/medicines/');
-                if (response.data.success) {
-                    const medicineData = response.data.medicines;
-                    setMedicines(medicineData);
-                    
-                    // Extract unique categories
+    const fetchMedicines = async (search = '', category = 'All') => {
+        try {
+            if (search || category !== 'All') {
+                setSearchLoading(true);
+            } else {
+                setLoading(true);
+            }
+            
+            const params = new URLSearchParams();
+            if (search && search.trim()) {
+                params.append('search', search.trim());
+            }
+            if (category && category !== 'All') {
+                params.append('category', category);
+            }
+            
+            const url = `https://medirural.onrender.com/api/medicines${params.toString() ? `?${params.toString()}` : ''}`;
+            const response = await axios.get(url);
+            
+            if (response.data.success) {
+                const medicineData = response.data.medicines;
+                setMedicines(medicineData);
+                
+                // Extract unique categories from all medicines (we'll need to fetch all for categories)
+                if (search || category !== 'All') {
+                    // If we're filtering, fetch all medicines to get categories
+                    const allMedicinesResponse = await axios.get('https://medirural.onrender.com/api/medicines');
+                    if (allMedicinesResponse.data.success) {
+                        const uniqueCategories = ['All', ...new Set(allMedicinesResponse.data.medicines.map(med => med.category))];
+                        setCategories(uniqueCategories);
+                    }
+                } else {
+                    // If no filters, use current medicines for categories
                     const uniqueCategories = ['All', ...new Set(medicineData.map(med => med.category))];
                     setCategories(uniqueCategories);
-                } else {
-                    setError('Error fetching medicines: ' + (response.data.message || 'Unknown error'));
                 }
-                setLoading(false);
-            } catch (err) {
-                setError('Error fetching medicines: ' + (err.response?.data?.message || err.message));
-                setLoading(false);
+            } else {
+                setError('Error fetching medicines: ' + (response.data.message || 'Unknown error'));
             }
-        };
+        } catch (err) {
+            setError('Error fetching medicines: ' + (err.response?.data?.message || err.message));
+        } finally {
+            setLoading(false);
+            setSearchLoading(false);
+        }
+    };
 
-        fetchMedicines();
+    useEffect(() => {
+        fetchMedicines(initialSearch, initialCategory);
     }, []);
+
+    const handleSearchChange = (newSearchTerm) => {
+        setSearchTerm(newSearchTerm);
+        fetchMedicines(newSearchTerm, selectedCategory);
+    };
+
+    const handleCategoryChange = (newCategory) => {
+        setSelectedCategory(newCategory);
+        fetchMedicines(searchTerm, newCategory);
+    };
 
     const handleViewDetails = (id) => {
         navigate(`/medicine/${id}`);
@@ -125,13 +163,6 @@ export default function AllMedicines() {
         event.stopPropagation();
         addToCart(medicine, 1);
     };
-
-    const filteredMedicines = medicines.filter(medicine => {
-        const matchesSearch = medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            medicine.description.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory === 'All' || medicine.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-    });
 
     if (loading) {
         return (
@@ -164,18 +195,27 @@ export default function AllMedicines() {
 
                 <SearchFilterBar
                     searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
+                    setSearchTerm={handleSearchChange}
                     selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
+                    setSelectedCategory={handleCategoryChange}
                     categories={categories}
-                    searchPlaceholder="Search medicines by name or description..."
+                    searchPlaceholder="Search medicines by name, category, or manufacturer..."
                 />
                 
                 <Grid container spacing={{ xs: 1, md: 3 }} sx={{
                     display : 'flex',
                     justifyContent : 'center'
                 }}>
-                    {filteredMedicines.map((medicine, index) => (
+                    {searchLoading && (
+                        <Grid item xs={12}>
+                            <Box display="flex" justifyContent="center" alignItems="center" py={4}>
+                                <CircularProgress size={30} thickness={3} />
+                                <Typography variant="body2" sx={{ ml: 2 }}>Searching...</Typography>
+                            </Box>
+                        </Grid>
+                    )}
+                    
+                    {medicines.map((medicine, index) => (
                         <Grid item key={medicine._id} xs={10} sm={6} md={4} lg={3} sx={{display : 'flex' , justifyContent : 'space-between'}}>
                             <Grow in={true} timeout={300 + index * 50}>
                                 <StyledCard onClick={() => handleViewDetails(medicine._id)}>
@@ -279,19 +319,21 @@ export default function AllMedicines() {
                             </Grow>
                         </Grid>
                     ))}
-                    {filteredMedicines.length === 0 && (
+                    {medicines.length === 0 && !searchLoading && (
                         <Grid item xs={12}>
                             <Box 
-                                sx={{ 
-                                    textAlign: 'center', 
-                                    py: 8,
-                                    backgroundColor: 'white',
-                                    borderRadius: '12px',
-                                    border: '1px solid rgba(0, 0, 0, 0.08)'
-                                }}
+                                display="flex" 
+                                flexDirection="column"
+                                justifyContent="center" 
+                                alignItems="center" 
+                                py={8}
+                                textAlign="center"
                             >
-                                <Typography variant="h6" color="text.secondary">
-                                    No medicines found matching your search criteria
+                                <Typography variant="h6" color="text.secondary" gutterBottom>
+                                    No medicines found
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {searchTerm ? `No results for "${searchTerm}"` : 'Try adjusting your search or category filter'}
                                 </Typography>
                             </Box>
                         </Grid>

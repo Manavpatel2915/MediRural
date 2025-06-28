@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 import { 
     Package, 
     CheckCircle, 
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 
 const Stats = () => {
+    const { token } = useAuth();
     const [stats, setStats] = useState({
         totalOrders: 0,
         pendingOrders: 0,
@@ -29,23 +31,91 @@ const Stats = () => {
 
     useEffect(() => {
         fetchStats();
-    }, []);
+    }, [token]);
 
     const fetchStats = async () => {
         try {
             setLoading(true);
             const response = await axios.get('https://medirural.onrender.com/api/orders/supplier', {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
-            setStats(response.data);
+            
+            // Transform orders data to stats format
+            const orders = response.data?.orders || [];
+            const transformedStats = transformOrdersToStats(orders);
+            setStats(transformedStats);
         } catch (error) {
             console.error('Error fetching stats:', error);
             setError(error.response?.data?.message || error.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    // Transform orders data to stats format
+    const transformOrdersToStats = (orders) => {
+        if (!orders || !Array.isArray(orders)) {
+            return {
+                totalOrders: 0,
+                pendingOrders: 0,
+                deliveredOrders: 0,
+                confirmedOrders: 0,
+                shippedOrders: 0,
+                cancelledOrders: 0,
+                totalRevenue: 0,
+                averageOrderValue: 0,
+                todayOrders: 0,
+                thisWeekOrders: 0
+            };
+        }
+
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        let totalRevenue = 0;
+        let todayOrders = 0;
+        let thisWeekOrders = 0;
+        const statusCounts = {
+            pending: 0,
+            confirmed: 0,
+            shipped: 0,
+            delivered: 0,
+            cancelled: 0
+        };
+
+        orders.forEach(order => {
+            const orderDate = new Date(order.createdAt);
+            const orderAmount = order.totalAmount || 0;
+            
+            totalRevenue += orderAmount;
+            statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
+
+            // Check if order is from today
+            if (orderDate >= today) {
+                todayOrders++;
+            }
+
+            // Check if order is from this week
+            if (orderDate >= weekAgo) {
+                thisWeekOrders++;
+            }
+        });
+
+        return {
+            totalOrders: orders.length,
+            pendingOrders: statusCounts.pending || 0,
+            deliveredOrders: statusCounts.delivered || 0,
+            confirmedOrders: statusCounts.confirmed || 0,
+            shippedOrders: statusCounts.shipped || 0,
+            cancelledOrders: statusCounts.cancelled || 0,
+            totalRevenue,
+            averageOrderValue: orders.length > 0 ? Math.round(totalRevenue / orders.length) : 0,
+            todayOrders,
+            thisWeekOrders
+        };
     };
 
     const formatCurrency = (amount) => {

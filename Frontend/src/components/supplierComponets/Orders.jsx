@@ -1,9 +1,10 @@
-import React from 'react';
-import { useEffect, useState } from "react"
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 
 const Orders = () => {
+    const { token } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,7 +16,7 @@ const Orders = () => {
                 // Use the supplier-specific endpoint that filters by pincode
                 const response = await axios.get('https://medirural.onrender.com/api/orders/supplier', {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 setOrders(response.data.orders);
@@ -27,7 +28,7 @@ const Orders = () => {
             }
         };
         fetchOrders();
-    }, []);
+    }, [token]);
     
     if (loading) {
         return <div className='flex justify-center items-center min-h-[200px] text-lg font-semibold'>Loading...</div>;
@@ -35,7 +36,7 @@ const Orders = () => {
     if (error) {
         return <div className='flex justify-center items-center min-h-[200px] text-red-600 font-semibold'>Error: {error}</div>;
     }
-    if (orders.length === 0) {
+    if (!orders || orders.length === 0) {
         return (
             <div className='flex flex-col justify-center items-center min-h-[200px] text-gray-600 font-semibold'>
                 <p>No orders found for your area</p>
@@ -48,7 +49,7 @@ const Orders = () => {
         try {
             const response = await axios.put(`https://medirural.onrender.com/api/orders/${id}`, { status: newStatus }, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
             setOrders(orders.map((order) => order._id === id ? { ...order, status: newStatus } : order));
@@ -83,7 +84,7 @@ const Orders = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map((order) => (
+                        {(orders || []).map((order) => (
                             <tr key={order._id} className="border-b hover:bg-blue-50 transition">
                                 <td className="py-2 px-2 text-left font-medium">{order._id}</td>
                                 <td className="py-2 px-2 text-left">

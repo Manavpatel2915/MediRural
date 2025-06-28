@@ -63,12 +63,34 @@ app.get('/api/medicines/categories', async (req, res) => {
 });
 app.get('/api/medicines', async (req, res) => {
     try {
-        const medicines = await Medicine.find({});
+        const { search, category } = req.query;
+        let query = {};
+        
+        // If search term is provided, use MongoDB text search
+        if (search && search.trim()) {
+            query.$text = { $search: search };
+        }
+        
+        // If category filter is provided
+        if (category && category !== 'All') {
+            query.category = category;
+        }
+        
+        // Execute the query with text search score if search is used
+        let medicines;
+        if (search && search.trim()) {
+            medicines = await Medicine.find(query, { score: { $meta: "textScore" } })
+                .sort({ score: { $meta: "textScore" } });
+        } else {
+            medicines = await Medicine.find(query);
+        }
+        
         res.json({
             success: true,
             medicines
         });
     } catch (error) {
+        console.error('Error fetching medicines:', error);
         res.json({success: false, message: error.message});
     }
 });

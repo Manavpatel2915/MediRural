@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [isAdmin , setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   // Check auth status when component mounts
   useEffect(() => {
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       const token = localStorage.getItem('token');
+      setToken(token);
       if (!token) {
         setIsAuthenticated(false);
         setUser(null);
@@ -60,6 +62,7 @@ export const AuthProvider = ({ children }) => {
     if (response.data.success) {
       // Store token in localStorage
       localStorage.setItem('token', response.data.token);
+      setToken(response.data.token);
       
       setIsAuthenticated(true);
       
@@ -91,6 +94,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Clear token from localStorage
       localStorage.removeItem('token');
+      setToken(null);
       
       // Try to logout from server (optional)
       const token = localStorage.getItem('token');
@@ -110,6 +114,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Logout error:', error);
       // Even if logout fails, reset local state
       localStorage.removeItem('token');
+      setToken(null);
       setIsAuthenticated(false);
       setUser(null);
       setIsAdmin(false);
@@ -126,7 +131,8 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
-    checkAuthStatus
+    checkAuthStatus,
+    token
   };
 
   return (

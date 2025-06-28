@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 import { 
     TrendingUp, 
     DollarSign, 
@@ -13,6 +14,7 @@ import {
 } from 'lucide-react';
 
 const Revenue = () => {
+    const { token } = useAuth();
     const [revenueData, setRevenueData] = useState({
         dailyRevenue: [],
         medicineSales: [],
@@ -26,17 +28,28 @@ const Revenue = () => {
 
     useEffect(() => {
         fetchRevenueData();
-    }, [selectedPeriod]);
+    }, [selectedPeriod, token]);
 
     const fetchRevenueData = async () => {
         try {
             setLoading(true);
             const response = await axios.get('https://medirural.onrender.com/api/orders/supplier', {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
-            setRevenueData(response.data);
+            
+            // Check if response has the expected structure
+            if (response.data && response.data.orders) {
+                // Transform the orders data into revenue format
+                const orders = response.data.orders || [];
+                const transformedData = transformOrdersToRevenue(orders);
+                setRevenueData(transformedData);
+            } else {
+                // Fallback to mock data if structure is unexpected
+                const mockData = generateMockData();
+                setRevenueData(mockData);
+            }
         } catch (error) {
             console.error('Error fetching revenue data:', error);
             // Fallback to mock data if API fails
@@ -45,6 +58,54 @@ const Revenue = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Transform orders data to revenue format
+    const transformOrdersToRevenue = (orders) => {
+        if (!orders || !Array.isArray(orders)) {
+            return generateMockData();
+        }
+
+        // Group orders by date
+        const dailyData = {};
+        orders.forEach(order => {
+            const date = new Date(order.createdAt).toISOString().split('T')[0];
+            if (!dailyData[date]) {
+                dailyData[date] = { revenue: 0, orders: 0 };
+            }
+            dailyData[date].revenue += order.totalAmount || 0;
+            dailyData[date].orders += 1;
+        });
+
+        // Convert to array format
+        const dailyRevenue = Object.keys(dailyData).map(date => ({
+            date,
+            revenue: dailyData[date].revenue,
+            orders: dailyData[date].orders
+        })).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        // Calculate totals
+        const totalRevenue = dailyRevenue.reduce((sum, day) => sum + day.revenue, 0);
+        const totalOrders = dailyRevenue.reduce((sum, day) => sum + day.orders, 0);
+
+        // Generate medicine sales data (mock for now)
+        const medicineSales = [
+            { name: 'Paracetamol', sales: 1250, revenue: 6250 },
+            { name: 'Amoxicillin', sales: 890, revenue: 4450 },
+            { name: 'Omeprazole', sales: 650, revenue: 3250 },
+            { name: 'Cetirizine', sales: 420, revenue: 2100 },
+            { name: 'Metformin', sales: 380, revenue: 1900 }
+        ];
+
+        return {
+            dailyRevenue: dailyRevenue.length > 0 ? dailyRevenue : generateMockData().dailyRevenue,
+            medicineSales,
+            totalRevenue,
+            totalOrders,
+            averageOrderValue: totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0,
+            growthRate: dailyRevenue.length > 1 ? 
+                ((dailyRevenue[dailyRevenue.length - 1].revenue - dailyRevenue[0].revenue) / dailyRevenue[0].revenue * 100).toFixed(1) : 0
+        };
     };
 
     // Generate mock data for demonstration

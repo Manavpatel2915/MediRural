@@ -10,7 +10,7 @@ const medicineSchema = Joi.object({
     manufacturer: Joi.string().required(),
     expiryDate: Joi.date().iso().required(),
     prescriptionRequired: Joi.boolean().optional(),
-    imageUrl: Joi.string().uri().required(), // ✅ match with mongoose schema
+    imageUrl: Joi.string().required(), // Changed from uri() to string() for more flexibility
     isActive: Joi.boolean().optional()
   }).required()
 });

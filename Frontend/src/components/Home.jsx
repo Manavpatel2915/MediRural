@@ -91,7 +91,7 @@ const Home = () => {
                   className="absolute right-2 top-2 bottom-2 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
                   onClick={() => {
                     if (searchInput.trim()) {
-                      navigate('/medicines', { state: { search: searchInput, category: selectedCategory } });
+                      navigate('/medicines', { state: { search: searchInput.trim(), category: selectedCategory } });
                     } else {
                       navigate('/medicines');
                     }
@@ -104,7 +104,13 @@ const Home = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button className="group relative bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white px-10 py-5 rounded-3xl font-bold shadow-2xl hover:shadow-blue-500/25 transform hover:-translate-y-2 transition-all duration-500 overflow-hidden">
-                <span className="relative flex items-center justify-center">
+                <span className="relative flex items-center justify-center" onClick={() => {
+                  if (searchInput.trim()) {
+                    navigate('/medicines', { state: { search: searchInput.trim(), category: selectedCategory } });
+                  } else {
+                    navigate('/medicines');
+                  }
+                }}>
                   Shop Premium Medicines
                   <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
                 </span>

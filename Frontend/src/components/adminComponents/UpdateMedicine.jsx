@@ -9,10 +9,12 @@ import {
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 export default function UpdateMedicine() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -34,7 +36,7 @@ export default function UpdateMedicine() {
       try {
         const response = await axios.get(`https://medirural.onrender.com/api/medicines/${id}`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${token}`
           }
         });
         if (response.data.success) {
@@ -59,7 +61,7 @@ export default function UpdateMedicine() {
     };
 
     fetchMedicine();
-  }, [id]);
+  }, [id, token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,7 +87,7 @@ export default function UpdateMedicine() {
         { medicine: updated },
         {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${token}`
           }
         }
       );

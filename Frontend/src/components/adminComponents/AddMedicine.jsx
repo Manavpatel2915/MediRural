@@ -9,8 +9,11 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-export default function AddMedicine({details}) {
+import { useAuth } from '../../context/AuthContext';
+
+export default function AddMedicine() {
     const navigate = useNavigate();
+    const { token } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -36,15 +39,19 @@ export default function AddMedicine({details}) {
     const cleanedData = {
       ...formData,
       price: Number(formData.price),
-      stock: Number(formData.stock)
+      stock: Number(formData.stock),
+      // Ensure imageUrl is a valid URL or use a default
+      imageUrl: formData.imageUrl || 'https://via.placeholder.com/300x200?text=Medicine'
     };
 
     try {
       console.log("Sending data:", cleanedData); // optional for debugging
 
-      const response = await axios.post('https://medirural.onrender.com/api/medicines', cleanedData, {
+      const response = await axios.post('https://medirural.onrender.com/api/medicines', {
+        medicine: cleanedData
+      }, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
 
@@ -54,7 +61,11 @@ export default function AddMedicine({details}) {
       }
     } catch (error) {
       console.error('Error:', error.response?.data || error.message);
-      alert(error.response?.data?.message || 'Failed to add medicine');
+      if (error.response?.data?.message) {
+        alert('Error: ' + error.response.data.message);
+      } else {
+        alert('Failed to add medicine. Please check all fields and try again.');
+      }
     }
   };
 
