@@ -42,13 +42,13 @@ export default function AddMedicine({details}) {
     try {
       console.log("Sending data:", cleanedData); // optional for debugging
 
-      const res = await axios.post(
-        'https://medirural.onrender.com/api/medicines',
-        { medicine: cleanedData },
-        { withCredentials: true }
-      );
+      const response = await axios.post('https://medirural.onrender.com/api/medicines', cleanedData, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
 
-      if (res.data.success) {
+      if (response.data.success) {
         alert('Added the medicine successfully!');
         navigate('/admin/medicines')
       }

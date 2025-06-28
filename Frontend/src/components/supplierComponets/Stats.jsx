@@ -34,8 +34,10 @@ const Stats = () => {
     const fetchStats = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('https://medirural.onrender.com/api/orders/supplier/stats', {
-                withCredentials: true
+            const response = await axios.get('https://medirural.onrender.com/api/orders/supplier', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
             });
             setStats(response.data);
         } catch (error) {

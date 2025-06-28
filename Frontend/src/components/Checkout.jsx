@@ -87,18 +87,13 @@ const handlePlaceOrder = async () => {
     }
 
     // ✅ Submit order
-    const { data } = await axios.post(
-      'https://medirural.onrender.com/api/orders',
-      orderData,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json'
-        }
+    const response = await axios.post('https://medirural.onrender.com/api/orders', orderData, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
-    );
+    });
 
-    setOrderId(data.orderId || ('ORD' + Date.now()));
+    setOrderId(response.data.orderId || ('ORD' + Date.now()));
     setOrderPlaced(true);
     clearCart();
     nextStep();

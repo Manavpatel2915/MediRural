@@ -33,7 +33,12 @@ const Orders = () => {
   useEffect(() => {
     let fetchOrders = async () => {
         try {
-            let res = await axios.get('https://medirural.onrender.com/api/orders/', {withCredentials : true})
+            const token = localStorage.getItem('token');
+            let res = await axios.get('https://medirural.onrender.com/api/orders/', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log(res.data.orders)
             console.log("working properly")
             setOrders(res.data.orders)
@@ -116,8 +121,13 @@ const Orders = () => {
       order._id === orderId ? { ...order, status: newStatus } : order
     ));
     try {
+      const token = localStorage.getItem('token');
       let res = await axios.put(`https://medirural.onrender.com/api/orders/${orderId}`,
-        { status : newStatus} , {withCredentials : true}
+        { status : newStatus} , {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }
       )
       if (res.data.success){
         alert('Successfully updated the status !')

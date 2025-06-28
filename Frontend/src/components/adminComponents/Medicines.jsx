@@ -12,7 +12,11 @@ const Medicines = () => {
   const navigate = useNavigate()
   const fetchMedicines = async () => {
     try {
-      const response = await axios.get('https://medirural.onrender.com/api/medicines/');
+      const response = await axios.get('https://medirural.onrender.com/api/medicines', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       if (response.data.success) {
         setMedicines(response.data.medicines);
       } else {

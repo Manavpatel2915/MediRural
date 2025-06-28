@@ -65,8 +65,6 @@ const Register = ({ onClose }) => {
       const response = await axios.post('https://medirural.onrender.com/api/users/register', {
         ...formData,
         confirmPassword: undefined
-      }, {
-        withCredentials: true
       });
 
       if (!response.data.success) {

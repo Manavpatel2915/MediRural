@@ -32,11 +32,13 @@ export default function UpdateMedicine() {
   useEffect(() => {
     const fetchMedicine = async () => {
       try {
-        const res = await axios.get(`https://medirural.onrender.com/api/medicines/${id}`, {
-          withCredentials: true
+        const response = await axios.get(`https://medirural.onrender.com/api/medicines/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         });
-        if (res.data.success) {
-          const med = res.data.medicine;
+        if (response.data.success) {
+          const med = response.data.medicine;
           setFormData({
             name: med.name,
             description: med.description,
@@ -81,7 +83,11 @@ export default function UpdateMedicine() {
       const res = await axios.put(
         `https://medirural.onrender.com/api/medicines/${id}`,
         { medicine: updated },
-        { withCredentials: true }
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
       );
 
       if (res.data.success) {
