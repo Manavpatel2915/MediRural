@@ -239,6 +239,22 @@ router.post(
       return res.status(400).json({ success: false, errors: errors.array() });
     }
 
+    // Handle subscription data
+    if (req.body.isSubscription && req.body.subscriptionDetails) {
+      const { duration, frequency, nextDeliveryDate } = req.body.subscriptionDetails;
+      
+      // Use the nextDeliveryDate sent from frontend, or calculate if not provided
+      if (!nextDeliveryDate) {
+        const calculatedDate = new Date();
+        if (duration === '7days') {
+          calculatedDate.setDate(calculatedDate.getDate() + 7);
+        } else if (duration === '1month') {
+          calculatedDate.setMonth(calculatedDate.getMonth() + 1);
+        }
+        req.body.subscriptionDetails.nextDeliveryDate = calculatedDate;
+      }
+    }
+
     const order = new Order(req.body);
     await order.save();
 

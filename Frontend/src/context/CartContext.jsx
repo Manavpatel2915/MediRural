@@ -41,13 +41,26 @@ const cartReducer = (state, action) => {
         case 'CLEAR_CART':
             return {
                 ...state,
-                items: []
+                items: [],
+                subscriptionDetails: null
             };
         
         case 'SET_CART':
             return {
                 ...state,
                 items: action.payload
+            };
+
+        case 'SET_SUBSCRIPTION_DETAILS':
+            return {
+                ...state,
+                subscriptionDetails: action.payload
+            };
+
+        case 'CLEAR_SUBSCRIPTION_DETAILS':
+            return {
+                ...state,
+                subscriptionDetails: null
             };
         
         default:
@@ -58,11 +71,15 @@ const cartReducer = (state, action) => {
 export const CartProvider = ({ children }) => {
     const [state, dispatch] = useReducer(
         cartReducer,
-        { items: [] },
+        { items: [], subscriptionDetails: null },
         (initialState) => {
             try {
                 const savedCart = localStorage.getItem('cart');
-                return savedCart ? { items: JSON.parse(savedCart) } : initialState;
+                const savedSubscription = localStorage.getItem('subscriptionDetails');
+                return {
+                    items: savedCart ? JSON.parse(savedCart) : initialState.items,
+                    subscriptionDetails: savedSubscription ? JSON.parse(savedSubscription) : initialState.subscriptionDetails
+                };
             } catch (e) {
                 console.error('Error loading cart:', e);
                 return initialState;
@@ -77,6 +94,15 @@ export const CartProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(state.items));
     }, [state.items]);
+
+    // Save subscription details to localStorage whenever it changes
+    useEffect(() => {
+        if (state.subscriptionDetails) {
+            localStorage.setItem('subscriptionDetails', JSON.stringify(state.subscriptionDetails));
+        } else {
+            localStorage.removeItem('subscriptionDetails');
+        }
+    }, [state.subscriptionDetails]);
 
     const addToCart = (medicine, quantity = 1) => {
         dispatch({
@@ -111,14 +137,32 @@ export const CartProvider = ({ children }) => {
         return state.items.reduce((count, item) => count + item.quantity, 0);
     };
 
+    const setSubscriptionDetails = (details) => {
+        if (details) {
+            dispatch({
+                type: 'SET_SUBSCRIPTION_DETAILS',
+                payload: details
+            });
+        } else {
+            dispatch({ type: 'CLEAR_SUBSCRIPTION_DETAILS' });
+        }
+    };
+
+    const clearSubscriptionDetails = () => {
+        dispatch({ type: 'CLEAR_SUBSCRIPTION_DETAILS' });
+    };
+
     const value = {
         items: state.items,
+        subscriptionDetails: state.subscriptionDetails,
         addToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
         getCartTotal,
-        getCartCount
+        getCartCount,
+        setSubscriptionDetails,
+        clearSubscriptionDetails
     };
 
     return (

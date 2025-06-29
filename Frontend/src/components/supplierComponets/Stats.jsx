@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { 
@@ -9,7 +9,10 @@ import {
     DollarSign,
     Truck,
     AlertCircle,
-    BarChart3
+    BarChart3,
+    RefreshCw,
+    Wifi,
+    WifiOff
 } from 'lucide-react';
 
 const Stats = () => {
@@ -28,30 +31,98 @@ const Stats = () => {
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isAutoRefresh, setIsAutoRefresh] = useState(true);
+    const [lastUpdated, setLastUpdated] = useState(new Date());
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [connectionStatus, setConnectionStatus] = useState('connected');
+    
+    const intervalRef = useRef(null);
+    const abortControllerRef = useRef(null);
+
+    // Auto-refresh interval (30 seconds)
+    const REFRESH_INTERVAL = 30000;
 
     useEffect(() => {
         fetchStats();
-    }, [token]);
+        
+        // Set up auto-refresh
+        if (isAutoRefresh) {
+            startAutoRefresh();
+        }
 
-    const fetchStats = async () => {
+        // Cleanup on unmount
+        return () => {
+            stopAutoRefresh();
+        };
+    }, [token, isAutoRefresh]);
+
+    const startAutoRefresh = () => {
+        stopAutoRefresh(); // Clear any existing interval
+        intervalRef.current = setInterval(() => {
+            fetchStats(true); // Silent refresh
+        }, REFRESH_INTERVAL);
+    };
+
+    const stopAutoRefresh = () => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+    };
+
+    const fetchStats = async (silent = false) => {
         try {
-            setLoading(true);
+            // Cancel previous request if still pending
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+            
+            // Create new abort controller
+            abortControllerRef.current = new AbortController();
+            
+            if (!silent) {
+                setLoading(true);
+                setIsRefreshing(true);
+            }
+            
+            setConnectionStatus('connecting');
+            
             const response = await axios.get('https://medirural.onrender.com/api/orders/supplier', {
                 headers: {
                     'Authorization': `Bearer ${token}`
-                }
+                },
+                signal: abortControllerRef.current.signal
             });
             
             // Transform orders data to stats format
             const orders = response.data?.orders || [];
             const transformedStats = transformOrdersToStats(orders);
+            
             setStats(transformedStats);
+            setLastUpdated(new Date());
+            setConnectionStatus('connected');
+            setError(null);
+            
         } catch (error) {
+            if (error.name === 'AbortError') {
+                return; // Request was cancelled
+            }
+            
             console.error('Error fetching stats:', error);
+            setConnectionStatus('disconnected');
             setError(error.response?.data?.message || error.message);
         } finally {
             setLoading(false);
+            setIsRefreshing(false);
         }
+    };
+
+    const handleManualRefresh = () => {
+        fetchStats();
+    };
+
+    const toggleAutoRefresh = () => {
+        setIsAutoRefresh(!isAutoRefresh);
     };
 
     // Transform orders data to stats format
@@ -126,6 +197,21 @@ const Stats = () => {
         }).format(amount);
     };
 
+    const formatLastUpdated = (date) => {
+        const now = new Date();
+        const diff = now - date;
+        const seconds = Math.floor(diff / 1000);
+        const minutes = Math.floor(seconds / 60);
+        
+        if (seconds < 60) {
+            return `${seconds}s ago`;
+        } else if (minutes < 60) {
+            return `${minutes}m ago`;
+        } else {
+            return date.toLocaleTimeString();
+        }
+    };
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'pending': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
@@ -163,6 +249,12 @@ const Stats = () => {
                     <AlertCircle className="w-12 h-12 mx-auto mb-4" />
                     <p className="text-lg font-semibold">Error loading stats</p>
                     <p className="text-sm text-gray-600">{error}</p>
+                    <button 
+                        onClick={handleManualRefresh}
+                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    >
+                        Retry
+                    </button>
                 </div>
             </div>
         );
@@ -170,16 +262,73 @@ const Stats = () => {
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
-            {/* Header */}
+            {/* Header with Real-time Controls */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-blue-700 mb-2">Dashboard Statistics</h1>
-                <p className="text-gray-600">Overview of your area-based order performance</p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-blue-700 mb-2">Dashboard Statistics</h1>
+                        <p className="text-gray-600">Overview of your area-based order performance</p>
+                    </div>
+                    
+                    {/* Real-time Controls */}
+                    <div className="mt-4 sm:mt-0 flex items-center space-x-4">
+                        {/* Connection Status */}
+                        <div className="flex items-center space-x-2">
+                            {connectionStatus === 'connected' ? (
+                                <Wifi className="w-4 h-4 text-green-600" />
+                            ) : connectionStatus === 'connecting' ? (
+                                <RefreshCw className="w-4 h-4 text-yellow-600 animate-spin" />
+                            ) : (
+                                <WifiOff className="w-4 h-4 text-red-600" />
+                            )}
+                            <span className={`text-sm font-medium ${
+                                connectionStatus === 'connected' ? 'text-green-600' :
+                                connectionStatus === 'connecting' ? 'text-yellow-600' : 'text-red-600'
+                            }`}>
+                                {connectionStatus === 'connected' ? 'Live' :
+                                 connectionStatus === 'connecting' ? 'Connecting' : 'Offline'}
+                            </span>
+                        </div>
+
+                        {/* Auto-refresh Toggle */}
+                        <button
+                            onClick={toggleAutoRefresh}
+                            className={`px-3 py-1 rounded-lg text-sm font-medium transition ${
+                                isAutoRefresh 
+                                    ? 'bg-green-100 text-green-700 border border-green-300' 
+                                    : 'bg-gray-100 text-gray-700 border border-gray-300'
+                            }`}
+                        >
+                            {isAutoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
+                        </button>
+
+                        {/* Manual Refresh */}
+                        <button
+                            onClick={handleManualRefresh}
+                            disabled={isRefreshing}
+                            className="flex items-center space-x-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-lg border border-blue-300 hover:bg-blue-200 transition disabled:opacity-50"
+                        >
+                            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                            <span className="text-sm font-medium">Refresh</span>
+                        </button>
+
+                        {/* Last Updated */}
+                        <div className="text-sm text-gray-500">
+                            Updated: {formatLastUpdated(lastUpdated)}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Key Metrics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {/* Total Orders */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border">
+                <div className="bg-white p-6 rounded-xl shadow-sm border relative">
+                    {isRefreshing && (
+                        <div className="absolute top-2 right-2">
+                            <RefreshCw className="w-4 h-4 text-blue-600 animate-spin" />
+                        </div>
+                    )}
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Total Orders</p>
@@ -195,7 +344,12 @@ const Stats = () => {
                 </div>
 
                 {/* Total Revenue */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border">
+                <div className="bg-white p-6 rounded-xl shadow-sm border relative">
+                    {isRefreshing && (
+                        <div className="absolute top-2 right-2">
+                            <RefreshCw className="w-4 h-4 text-green-600 animate-spin" />
+                        </div>
+                    )}
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Total Revenue</p>
@@ -211,7 +365,12 @@ const Stats = () => {
                 </div>
 
                 {/* Average Order Value */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border">
+                <div className="bg-white p-6 rounded-xl shadow-sm border relative">
+                    {isRefreshing && (
+                        <div className="absolute top-2 right-2">
+                            <RefreshCw className="w-4 h-4 text-purple-600 animate-spin" />
+                        </div>
+                    )}
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
@@ -227,7 +386,12 @@ const Stats = () => {
                 </div>
 
                 {/* Today's Orders */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border">
+                <div className="bg-white p-6 rounded-xl shadow-sm border relative">
+                    {isRefreshing && (
+                        <div className="absolute top-2 right-2">
+                            <RefreshCw className="w-4 h-4 text-orange-600 animate-spin" />
+                        </div>
+                    )}
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Today's Orders</p>

@@ -14,14 +14,21 @@ import {
     Paper,
     Divider,
     Alert,
-    Snackbar
+    Snackbar,
+    FormControl,
+    FormControlLabel,
+    Radio,
+    RadioGroup,
+    Switch,
+    FormGroup
 } from '@mui/material';
 import {
     Add as AddIcon,
     Remove as RemoveIcon,
     Delete as DeleteIcon,
     ShoppingCart as ShoppingCartIcon,
-    ArrowBack as ArrowBackIcon
+    ArrowBack as ArrowBackIcon,
+    Repeat as RepeatIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
@@ -56,9 +63,27 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function Cart() {
-    const { items, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+    const { items, removeFromCart, updateQuantity, getCartTotal, clearCart, setSubscriptionDetails } = useCart();
     const navigate = useNavigate();
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+    const [isSubscription, setIsSubscription] = useState(false);
+    const [subscriptionDuration, setSubscriptionDuration] = useState('7days');
+
+    // Function to calculate next delivery date
+    const calculateNextDeliveryDate = (duration) => {
+        const nextDate = new Date();
+        if (duration === '7days') {
+            nextDate.setDate(nextDate.getDate() + 7);
+        } else if (duration === '1month') {
+            nextDate.setMonth(nextDate.getMonth() + 1);
+        }
+        return nextDate.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
 
     const handleQuantityChange = (medicineId , newQuantity) => {
         if (newQuantity < 1) {
@@ -97,6 +122,31 @@ export default function Cart() {
 
     const handleBack = () => {
         navigate('/medicines');
+    };
+
+    const handleSubscriptionToggle = (event) => {
+        setIsSubscription(event.target.checked);
+        if (!event.target.checked) {
+            setSubscriptionDetails(null);
+        } else {
+            setSubscriptionDetails({
+                isSubscription: true,
+                duration: subscriptionDuration,
+                frequency: subscriptionDuration === '7days' ? 'weekly' : 'monthly'
+            });
+        }
+    };
+
+    const handleDurationChange = (event) => {
+        const duration = event.target.value;
+        setSubscriptionDuration(duration);
+        if (isSubscription) {
+            setSubscriptionDetails({
+                isSubscription: true,
+                duration: duration,
+                frequency: duration === '7days' ? 'weekly' : 'monthly'
+            });
+        }
     };
 
     if (items.length === 0) {
@@ -249,6 +299,88 @@ export default function Cart() {
                             <Typography variant="h5" component="h2" sx={{ fontWeight: 600, mb: 3, color: '#0f172a' }}>
                                 Order Summary
                             </Typography>
+                            
+                            {/* Subscription Section */}
+                            <Box sx={{ mb: 3, p: 2, backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <RepeatIcon sx={{ mr: 1, color: '#2563eb' }} />
+                                        <Typography variant="h6" sx={{ fontWeight: 600, color: '#1e293b' }}>
+                                            Subscribe & Save
+                                        </Typography>
+                                    </Box>
+                                    <Switch
+                                        checked={isSubscription}
+                                        onChange={handleSubscriptionToggle}
+                                        sx={{
+                                            '& .MuiSwitch-switchBase.Mui-checked': {
+                                                color: '#2563eb',
+                                            },
+                                            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                                backgroundColor: '#2563eb',
+                                            },
+                                        }}
+                                    />
+                                </Box>
+                                
+                                {isSubscription && (
+                                    <FormControl component="fieldset" sx={{ width: '100%' }}>
+                                        <Typography variant="body2" sx={{ mb: 1, color: '#64748b', fontWeight: 500 }}>
+                                            Choose Subscription Duration:
+                                        </Typography>
+                                        <RadioGroup
+                                            value={subscriptionDuration}
+                                            onChange={handleDurationChange}
+                                        >
+                                            <FormControlLabel
+                                                value="7days"
+                                                control={<Radio sx={{ color: '#2563eb', '&.Mui-checked': { color: '#2563eb' } }} />}
+                                                label={
+                                                    <Box>
+                                                        <Typography variant="body2" sx={{ fontWeight: 500, color: '#1e293b' }}>
+                                                            7 Days Subscription
+                                                        </Typography>
+                                                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                                            Weekly deliveries
+                                                        </Typography>
+                                                    </Box>
+                                                }
+                                            />
+                                            <FormControlLabel
+                                                value="1month"
+                                                control={<Radio sx={{ color: '#2563eb', '&.Mui-checked': { color: '#2563eb' } }} />}
+                                                label={
+                                                    <Box>
+                                                        <Typography variant="body2" sx={{ fontWeight: 500, color: '#1e293b' }}>
+                                                            1 Month Subscription
+                                                        </Typography>
+                                                        <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                                            Monthly deliveries
+                                                        </Typography>
+                                                    </Box>
+                                                }
+                                            />
+                                        </RadioGroup>
+                                        
+                                        {/* Next Delivery Date Display */}
+                                        <Box sx={{ 
+                                            mt: 2, 
+                                            p: 2, 
+                                            backgroundColor: '#eff6ff', 
+                                            borderRadius: '6px', 
+                                            border: '1px solid #dbeafe' 
+                                        }}>
+                                            <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e40af', mb: 0.5 }}>
+                                                📅 Next Delivery Date:
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ fontWeight: 500, color: '#1e293b' }}>
+                                                {calculateNextDeliveryDate(subscriptionDuration)}
+                                            </Typography>
+                                        </Box>
+                                    </FormControl>
+                                )}
+                            </Box>
+
                             <Box sx={{ mb: 2 }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                                     <Typography variant="body1" sx={{ color: '#334155' }}>Subtotal:</Typography>
@@ -258,6 +390,14 @@ export default function Cart() {
                                     <Typography variant="body1" sx={{ color: '#334155' }}>Shipping:</Typography>
                                     <Typography variant="body1" sx={{ color: '#059669' }}>Free</Typography>
                                 </Box>
+                                {isSubscription && (
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                        <Typography variant="body1" sx={{ color: '#334155' }}>Subscription:</Typography>
+                                        <Typography variant="body1" sx={{ color: '#059669', fontWeight: 500 }}>
+                                            {subscriptionDuration === '7days' ? '7 Days' : '1 Month'}
+                                        </Typography>
+                                    </Box>
+                                )}
                                 <Divider sx={{ my: 2 }} />
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#0f172a' }}>Total:</Typography>
