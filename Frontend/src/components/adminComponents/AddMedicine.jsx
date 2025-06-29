@@ -5,7 +5,10 @@ import {
   Button,
   Typography,
   Box,
-  Grid
+  Grid,
+  Input,
+  InputLabel,
+  FormControl
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -22,8 +25,9 @@ export default function AddMedicine() {
     category: '',
     manufacturer: '',
     expiryDate: '',
-    imageUrl: ''
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,25 +37,45 @@ export default function AddMedicine() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!selectedFile) {
+      alert('Please select an image file');
+      return;
+    }
 
     const cleanedData = {
       ...formData,
       price: Number(formData.price),
       stock: Number(formData.stock),
-      // Ensure imageUrl is a valid URL or use a default
-      imageUrl: formData.imageUrl || 'https://via.placeholder.com/300x200?text=Medicine'
     };
 
     try {
       console.log("Sending data:", cleanedData); // optional for debugging
 
-      const response = await axios.post('https://medirural.onrender.com/api/medicines', {
-        medicine: cleanedData
-      }, {
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('image', selectedFile);
+      formDataToSend.append('medicine', JSON.stringify(cleanedData));
+
+      const response = await axios.post('https://medirural.onrender.com/api/medicines', formDataToSend, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
         }
       });
 
@@ -155,15 +179,28 @@ export default function AddMedicine() {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              label="Image URL"
-              name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleChange}
-            />
+            <FormControl fullWidth>
+              <InputLabel htmlFor="image-upload">Medicine Image</InputLabel>
+              <Input
+                id="image-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                required
+              />
+            </FormControl>
           </Grid>
+          {previewUrl && (
+            <Grid item xs={12}>
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <img 
+                  src={previewUrl} 
+                  alt="Preview" 
+                  style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover' }}
+                />
+              </Box>
+            </Grid>
+          )}
         </Grid>
         <Button
           type="submit"

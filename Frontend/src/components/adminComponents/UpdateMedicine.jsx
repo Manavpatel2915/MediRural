@@ -5,7 +5,10 @@ import {
   Button,
   Typography,
   Box,
-  Grid
+  Grid,
+  Input,
+  InputLabel,
+  FormControl
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -24,11 +27,12 @@ export default function UpdateMedicine() {
     category: '',
     manufacturer: '',
     expiryDate: '',
-    imageUrl: '',
     prescriptionRequired: false,
     isActive: true
   });
-
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [currentImageUrl, setCurrentImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -48,11 +52,12 @@ export default function UpdateMedicine() {
             stock: med.stock,
             category: med.category,
             manufacturer: med.manufacturer,
-            expiryDate: med.expiryDate.slice(0, 10), // for input type="date"
-            imageUrl: med.imageUrl,
+            expiryDate: med.expiryDate.slice(0, 10), 
             prescriptionRequired: med.prescriptionRequired || false,
             isActive: med.isActive ?? true
           });
+          setCurrentImageUrl(med.imageUrl);
+          setPreviewUrl(med.imageUrl);
         }
       } catch (err) {
         console.error(err);
@@ -71,6 +76,19 @@ export default function UpdateMedicine() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -82,17 +100,38 @@ export default function UpdateMedicine() {
         stock: Number(formData.stock),
       };
 
-      const res = await axios.put(
-        `https://medirural.onrender.com/api/medicines/${id}`,
-        { medicine: updated },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
+      let response;
+      
+      if (selectedFile) {
+        // If new file is selected, upload with file
+        const formDataToSend = new FormData();
+        formDataToSend.append('image', selectedFile);
+        formDataToSend.append('medicine', JSON.stringify(updated));
 
-      if (res.data.success) {
+        response = await axios.put(
+          `https://medirural.onrender.com/api/medicines/${id}`,
+          formDataToSend,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+        );
+      } else {
+        // If no new file, just update the data
+        response = await axios.put(
+          `https://medirural.onrender.com/api/medicines/${id}`,
+          { medicine: updated },
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+      }
+
+      if (response.data.success) {
         alert('Medicine updated successfully!');
         navigate('/admin/medicines'); // change as per your admin routes
       }
@@ -171,13 +210,30 @@ export default function UpdateMedicine() {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              required fullWidth label="Image URL"
-              name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleChange}
-            />
+            <FormControl fullWidth>
+              <InputLabel htmlFor="image-upload">Medicine Image (Optional - leave empty to keep current image)</InputLabel>
+              <Input
+                id="image-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </FormControl>
           </Grid>
+          {previewUrl && (
+            <Grid item xs={12}>
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  {selectedFile ? 'New Image Preview:' : 'Current Image:'}
+                </Typography>
+                <img 
+                  src={previewUrl} 
+                  alt="Preview" 
+                  style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover' }}
+                />
+              </Box>
+            </Grid>
+          )}
         </Grid>
 
         <Button
