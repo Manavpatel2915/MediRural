@@ -27,9 +27,9 @@ const About = () => {
       </p>
       <h2 style={{ color: '#2563eb', fontSize: '1.2rem', marginTop: '24px' }}>Our Team</h2>
       <ul style={{ marginBottom: '16px', paddingLeft: '20px' }}>
-        <li>Patel Prince – Team Leader</li>
-        <li>Patil Vaibhav – Team Member</li>
         <li>Patel Manav – Team Member</li>
+        <li>Patil Vaibhav – Team Member</li>
+        <li>Patel Prince – Team Leader</li>
         <li>Patel Garv – Team Member</li>
       </ul>
       <h2 style={{ color: '#2563eb', fontSize: '1.2rem', marginTop: '24px' }}>Contact Us</h2>
