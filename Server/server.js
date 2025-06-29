@@ -66,9 +66,15 @@ app.get('/api/medicines', async (req, res) => {
         const { search, category } = req.query;
         let query = {};
         
-        // If search term is provided, use MongoDB text search
+        // If search term is provided, use regex search for partial matching
         if (search && search.trim()) {
-            query.$text = { $search: search };
+            const searchRegex = new RegExp(search.trim(), 'i'); // 'i' for case-insensitive
+            query.$or = [
+                { name: searchRegex },
+                { category: searchRegex },
+                { manufacturer: searchRegex },
+                { description: searchRegex }
+            ];
         }
         
         // If category filter is provided
@@ -76,14 +82,8 @@ app.get('/api/medicines', async (req, res) => {
             query.category = category;
         }
         
-        // Execute the query with text search score if search is used
-        let medicines;
-        if (search && search.trim()) {
-            medicines = await Medicine.find(query, { score: { $meta: "textScore" } })
-                .sort({ score: { $meta: "textScore" } });
-        } else {
-            medicines = await Medicine.find(query);
-        }
+        // Execute the query
+        const medicines = await Medicine.find(query).sort({ name: 1 });
         
         res.json({
             success: true,

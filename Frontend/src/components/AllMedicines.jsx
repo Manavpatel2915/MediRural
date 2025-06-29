@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
@@ -93,8 +93,9 @@ export default function AllMedicines() {
     const initialCategory = location.state?.category || 'All';
     const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+    const [searchTimeout, setSearchTimeout] = useState(null);
 
-    const fetchMedicines = async (search = '', category = 'All') => {
+    const fetchMedicines = useCallback(async (search = '', category = 'All') => {
         try {
             if (search || category !== 'All') {
                 setSearchLoading(true);
@@ -139,15 +140,26 @@ export default function AllMedicines() {
             setLoading(false);
             setSearchLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchMedicines(initialSearch, initialCategory);
-    }, []);
+    }, [fetchMedicines, initialSearch, initialCategory]);
 
     const handleSearchChange = (newSearchTerm) => {
         setSearchTerm(newSearchTerm);
-        fetchMedicines(newSearchTerm, selectedCategory);
+        
+        // Clear existing timeout
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+        
+        // Set new timeout for debounced search
+        const timeout = setTimeout(() => {
+            fetchMedicines(newSearchTerm, selectedCategory);
+        }, 300); // 300ms delay
+        
+        setSearchTimeout(timeout);
     };
 
     const handleCategoryChange = (newCategory) => {
@@ -163,6 +175,15 @@ export default function AllMedicines() {
         event.stopPropagation();
         addToCart(medicine, 1);
     };
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+        };
+    }, [searchTimeout]);
 
     if (loading) {
         return (
@@ -216,7 +237,7 @@ export default function AllMedicines() {
                     )}
                     
                     {medicines.map((medicine, index) => (
-                        <Grid item key={medicine._id} xs={10} sm={6} md={4} lg={3} sx={{display : 'flex' , justifyContent : 'space-between'}}>
+                        <Grid item key={medicine._id} xs={10} sm={6} md={4} lg={3} sx={{display : 'flex' , justifyContent: 'space-between'}}>
                             <Grow in={true} timeout={300 + index * 50}>
                                 <StyledCard onClick={() => handleViewDetails(medicine._id)}>
                                     <StyledCardMedia
