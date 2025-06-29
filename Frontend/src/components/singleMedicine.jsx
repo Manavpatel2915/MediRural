@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
@@ -18,6 +18,9 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { styled } from '@mui/material/styles';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '100%',
@@ -64,6 +67,19 @@ const InfoChip = styled(Chip)(({ theme }) => ({
     fontSize: '0.875rem',
 }));
 
+const ScrollDownButton = styled(IconButton)(({ theme }) => ({
+    position: 'fixed',
+    bottom: 32,
+    right: 32,
+    zIndex: 1000,
+    background: 'linear-gradient(90deg, #7f5fff 0%, #5e60ce 100%)',
+    color: '#fff',
+    boxShadow: '0 4px 24px 0 rgba(99,102,241,0.10)',
+    '&:hover': {
+        background: 'linear-gradient(90deg, #5e60ce 0%, #7f5fff 100%)',
+    },
+}));
+
 export default function SingleMedicine() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -71,6 +87,8 @@ export default function SingleMedicine() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { addToCart } = useCart();
+    const [quantity, setQuantity] = useState(1);
+    const addToCartRef = useRef(null);
 
     useEffect(() => {
         const fetchMedicine = async () => {
@@ -95,8 +113,14 @@ export default function SingleMedicine() {
 
     const handleAddToCart = () => {
         if (medicine) {
-            addToCart(medicine, 1);
+            addToCart(medicine, quantity);
             // You can add a toast notification here
+        }
+    };
+
+    const handleScrollToCart = () => {
+        if (addToCartRef.current) {
+            addToCartRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
@@ -211,7 +235,24 @@ export default function SingleMedicine() {
                                 )}
                             </Box>
 
-                            <Box sx={{ mt: 'auto', pt: 4, display: 'flex', gap: 2 }}>
+                            <Box sx={{ mt: 'auto', pt: 4, display: 'flex', gap: 2 }} ref={addToCartRef}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 2 }}>
+                                    <IconButton
+                                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                        disabled={quantity <= 1}
+                                        size="small"
+                                    >
+                                        <RemoveIcon />
+                                    </IconButton>
+                                    <Typography variant="h6" sx={{ minWidth: 32, textAlign: 'center' }}>{quantity}</Typography>
+                                    <IconButton
+                                        onClick={() => setQuantity(q => Math.min(medicine.stock, q + 1))}
+                                        disabled={quantity >= medicine.stock}
+                                        size="small"
+                                    >
+                                        <AddIcon />
+                                    </IconButton>
+                                </Box>
                                 <StyledButton
                                     variant="contained"
                                     color="primary"
@@ -232,6 +273,9 @@ export default function SingleMedicine() {
                     </Box>
                 </StyledCard>
             </Container>
+            <ScrollDownButton onClick={handleScrollToCart} aria-label="Scroll to Add to Cart">
+                <KeyboardArrowDownIcon fontSize="large" />
+            </ScrollDownButton>
         </Box>
     );
 }
