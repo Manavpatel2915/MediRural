@@ -16,7 +16,7 @@ const steps = [
 ];
 
 export default function Checkout() {
-  const { items, clearCart, getCartTotal } = useCart();
+  const { items, clearCart, getCartTotal, subscriptionDetails } = useCart();
   const { user, token } = useAuth();
 
   const [step, setStep] = useState(0);
@@ -59,9 +59,6 @@ const handlePlaceOrder = async () => {
       return;
     }
 
-    
-    const isSubscription = false; 
-
     // ✅ Base order payload
     const orderData = {
       user: user.id,
@@ -72,17 +69,26 @@ const handlePlaceOrder = async () => {
       })),
       totalAmount: getCartTotal(),
       shipping,
-      isSubscription,
+      isSubscription: subscriptionDetails ? subscriptionDetails.isSubscription : false,
       paymentDetails: {
         paymentMethod: payment // one of: 'cash', 'card', 'upi'
       }
     };
 
     // ✅ Conditionally add subscriptionDetails only if it's a subscription order
-    if (isSubscription) {
+    if (subscriptionDetails && subscriptionDetails.isSubscription) {
+      // Calculate next delivery date
+      const nextDeliveryDate = new Date();
+      if (subscriptionDetails.duration === '7days') {
+        nextDeliveryDate.setDate(nextDeliveryDate.getDate() + 7);
+      } else if (subscriptionDetails.duration === '1month') {
+        nextDeliveryDate.setMonth(nextDeliveryDate.getMonth() + 1);
+      }
+
       orderData.subscriptionDetails = {
-        frequency: 'weekly', // or 'monthly'
-        nextDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // e.g., 1 week later
+        frequency: subscriptionDetails.frequency,
+        duration: subscriptionDetails.duration,
+        nextDeliveryDate: nextDeliveryDate
       };
     }
 

@@ -85,6 +85,13 @@ const orderSchema = new mongoose.Schema({
         return this.isSubscription;
       }
     },
+    duration: {
+      type: String,
+      enum: ['7days', '1month'],
+      required: function () {
+        return this.isSubscription;
+      }
+    },
     nextDeliveryDate: {
       type: Date,
       required: function () {
