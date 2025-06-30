@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Register = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -245,6 +246,9 @@ const Register = ({ onClose }) => {
           )}
         </button>
       </form>
+      <div className="text-center text-sm text-gray-800 mt-4">
+        <p>Already have an account? <Link to="/login" className='text-blue-900 font-bold underline'>Login</Link></p>
+      </div>
     </div>
   );
 };

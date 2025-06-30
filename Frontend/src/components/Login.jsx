@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 const Login = ({ onClose , isAdmin , isSupplier }) => {
   const [formData, setFormData] = useState({
@@ -36,7 +37,6 @@ const Login = ({ onClose , isAdmin , isSupplier }) => {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Login</h2>
@@ -94,6 +94,9 @@ const Login = ({ onClose , isAdmin , isSupplier }) => {
           )}
         </button>
       </form>
+      <div className="text-center text-sm text-gray-800 mt-4">
+        <p>Don't have an account? <Link to="/register" className='text-blue-900 font-bold underline'>Sign up</Link></p>
+      </div>
     </div>
   );
 };
