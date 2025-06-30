@@ -17,13 +17,17 @@ import {
     Paper,
     Chip,
     Fade,
-    Grow
+    Grow,
+    Snackbar,
+    Alert
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useSnackbar } from '../context/SnackbarContext';
+import { Add, Remove } from '@mui/icons-material';
 
 // Styled components for enhanced UI
 const StyledCard = styled(Card)(({ theme }) => ({
-    height: '420px', 
+    height: '420px',
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -46,7 +50,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
     height: '200px', // Fixed height for consistent image display
     width: '100%',
-    borderRadius : '12px',
+    borderRadius: '12px',
     objectFit: 'cover',
     backgroundColor: '#f8f9fa',
     flexShrink: 0, // Prevent image from shrinking
@@ -87,13 +91,14 @@ export default function AllMedicines() {
     const [error, setError] = useState(null);
     const [categories, setCategories] = useState(['All']);
     const navigate = useNavigate();
-    const { addToCart } = useCart();
+    const { addToCart, updateQuantity, removeFromCart, items } = useCart();
     const location = useLocation();
     const initialSearch = location.state?.search || '';
     const initialCategory = location.state?.category || 'All';
     const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [selectedCategory, setSelectedCategory] = useState(initialCategory);
     const [searchTimeout, setSearchTimeout] = useState(null);
+    const { showSnackbar } = useSnackbar();
 
     const fetchMedicines = useCallback(async (search = '', category = 'All') => {
         try {
@@ -102,7 +107,7 @@ export default function AllMedicines() {
             } else {
                 setLoading(true);
             }
-            
+
             const params = new URLSearchParams();
             if (search && search.trim()) {
                 params.append('search', search.trim());
@@ -110,14 +115,14 @@ export default function AllMedicines() {
             if (category && category !== 'All') {
                 params.append('category', category);
             }
-            
+
             const url = `https://medirural.onrender.com/api/medicines${params.toString() ? `?${params.toString()}` : ''}`;
             const response = await axios.get(url);
-            
+
             if (response.data.success) {
                 const medicineData = response.data.medicines;
                 setMedicines(medicineData);
-                
+
                 // Extract unique categories from all medicines (we'll need to fetch all for categories)
                 if (search || category !== 'All') {
                     // If we're filtering, fetch all medicines to get categories
@@ -148,17 +153,17 @@ export default function AllMedicines() {
 
     const handleSearchChange = (newSearchTerm) => {
         setSearchTerm(newSearchTerm);
-        
+
         // Clear existing timeout
         if (searchTimeout) {
             clearTimeout(searchTimeout);
         }
-        
+
         // Set new timeout for debounced search
         const timeout = setTimeout(() => {
             fetchMedicines(newSearchTerm, selectedCategory);
         }, 300); // 300ms delay
-        
+
         setSearchTimeout(timeout);
     };
 
@@ -171,9 +176,9 @@ export default function AllMedicines() {
         navigate(`/medicine/${id}`);
     };
 
-    const handleAddToCart = (medicine, event) => {
-        event.stopPropagation();
-        addToCart(medicine, 1);
+    const getCartQuantity = (medicineId) => {
+        const item = items.find(i => i.medicine._id === medicineId);
+        return item ? item.quantity : 0;
     };
 
     // Cleanup timeout on unmount
@@ -202,17 +207,17 @@ export default function AllMedicines() {
     }
 
     return (
-        <Box sx={{ 
-            backgroundColor: '#fafbfc', 
-            minHeight: '100vh', 
+        <Box sx={{
+            backgroundColor: '#fafbfc',
+            minHeight: '100vh',
         }}>
             <Container maxWidth="xl" sx={{
-                padding : {
-                    xs : 0,
-                    sm : 2
+                padding: {
+                    xs: 0,
+                    sm: 2
                 }
             }}>
-                
+
 
                 <SearchFilterBar
                     searchTerm={searchTerm}
@@ -222,10 +227,10 @@ export default function AllMedicines() {
                     categories={categories}
                     searchPlaceholder="Search medicines by name, category, or manufacturer..."
                 />
-                
+
                 <Grid container spacing={{ xs: 1, md: 3 }} sx={{
-                    display : 'flex',
-                    justifyContent : 'center'
+                    display: 'flex',
+                    justifyContent: 'center'
                 }}>
                     {searchLoading && (
                         <Grid item xs={12}>
@@ -235,118 +240,216 @@ export default function AllMedicines() {
                             </Box>
                         </Grid>
                     )}
-                    
-                    {medicines.map((medicine, index) => (
-                        <Grid item key={medicine._id} xs={10} sm={6} md={4} lg={3} sx={{display : 'flex' , justifyContent: 'space-between'}}>
-                            <Grow in={true} timeout={300 + index * 50}>
-                                <StyledCard onClick={() => handleViewDetails(medicine._id)}>
-                                    <StyledCardMedia
-                                        component="img"
-                                        image={medicine.imageUrl}
-                                        alt={medicine.name}
-                                    />
-                                    <CardContent >
-                                        <Box sx={{
-                                            display: 'flex',
-                                            width: '100%',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            
-                                        }}>
+
+                    {medicines.map((medicine, index) => {
+                        const quantity = getCartQuantity(medicine._id);
+                        return (
+                            <Grid item key={medicine._id} xs={10} sm={6} md={4} lg={3} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Grow in={true} timeout={300 + index * 50}>
+                                    <StyledCard onClick={() => handleViewDetails(medicine._id)}>
+                                        <StyledCardMedia
+                                            component="img"
+                                            image={medicine.imageUrl}
+                                            alt={medicine.name}
+                                        />
+                                        <CardContent >
+                                            <Box sx={{
+                                                display: 'flex',
+                                                width: '100%',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+
+                                            }}>
+                                                <Typography
+                                                    variant="h6"
+                                                    component="h2"
+                                                    sx={{
+                                                        fontWeight: 600,
+                                                        fontSize: '1rem',
+                                                        lineHeight: 1.1,
+                                                        mr: { sm: 1 },
+                                                        mb: { xs: 1, sm: 0 },
+                                                        wordBreak: 'break-word',
+                                                        whiteSpace: 'normal',
+                                                    }}
+                                                >
+                                                    {medicine.name}
+                                                </Typography>
+                                                <PriceChip
+                                                    label={`₹${medicine.price}`}
+                                                />
+                                            </Box>
+
                                             <Typography
-                                                variant="h6"
-                                                component="h2"
+                                                variant="body2"
+                                                color="text.secondary"
                                                 sx={{
-                                                    fontWeight: 600,
-                                                    fontSize: '1rem',
-                                                    lineHeight: 1.1,
-                                                    mr: { sm: 1 },
-                                                    mb: { xs: 1, sm: 0 },
-                                                    wordBreak: 'break-word',
-                                                    whiteSpace: 'normal',
+                                                    mb: 1,
+                                                    display: '-webkit-box',
+                                                    WebkitLineClamp: 2,
+                                                    WebkitBoxOrient: 'vertical',
+                                                    overflow: 'hidden',
+                                                    height: '40px',
+
                                                 }}
                                             >
-                                                {medicine.name}
+                                                {medicine.description}
                                             </Typography>
-                                            <PriceChip
-                                                label={`₹${medicine.price}`}
-                                            />
-                                        </Box>
-                                        
-                                        <Typography 
-                                            variant="body2" 
-                                            color="text.secondary"
-                                            sx={{ 
-                                                mb: 1,
-                                                display: '-webkit-box',
-                                                WebkitLineClamp: 2,
-                                                WebkitBoxOrient: 'vertical',
-                                                overflow: 'hidden',
-                                                height: '40px',
-                                                
+
+                                            <Box sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 1,
+
+
+                                            }}>
+                                                <StockChip
+                                                    size="small"
+                                                    label={medicine.stock > 10 ? 'In Stock' : medicine.stock > 0 ? 'Low Stock' : 'Out of Stock'}
+                                                    color={medicine.stock > 10 ? 'success' : medicine.stock > 0 ? 'warning' : 'error'}
+                                                />
+                                                <Typography
+                                                    variant="caption"
+                                                    color="text.secondary"
+                                                >
+                                                    {medicine.stock} left
+                                                </Typography>
+                                            </Box>
+                                        </CardContent>
+
+                                        <CardActions
+                                            sx={{
+                                                px: 2,
+                                                py: 1.5,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                flexDirection: { xs: 'column', sm: 'row' },
+                                                gap: { xs: 1.5, sm: 0.5 },
+                                                justifyContent: 'space-between'
                                             }}
                                         >
-                                            {medicine.description}
-                                        </Typography>
-                                        
-                                        <Box sx={{ 
-                                            display : 'flex',
-                                            alignItems: 'center',
-                                            gap: 1,
-                                            
+                                            {quantity === 0 ? (
+                                                <StyledButton
+                                                    variant="outlined"
+                                                    color="primary"
+                                                    fullWidth={{ xs: true, sm: false }}
+                                                    
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        addToCart(medicine, 1);
+                                                        showSnackbar({ message: 'Added to cart!', severity: 'success' });
+                                                    }}
+                                                >
+                                                    Add to Cart
+                                                </StyledButton>
+                                            ) : (
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        backgroundColor: 'rgba(66, 133, 244, 0.08)',
+                                                        borderRadius: '12px',
+                                                        border: '1px solid rgba(66, 133, 244, 0.2)',
+                                                        padding: '4px 8px',
+                                                        gap: 0.5,
+                                                        flex: { xs: 'none', sm: 1 },
+                                                        minWidth: 'fit-content',
+                                                        width: { xs: '100%', sm: 'auto' },
+                                                        justifyContent: { xs: 'center', sm: 'flex-start' }
+                                                    }}
+                                                    onClick={e => e.stopPropagation()}
+                                                >
+                                                    <StyledButton
+                                                        variant="text"
+                                                        color="primary"
+                                                        sx={{
+                                                            minWidth: 0,
+                                                            width: 28,
+                                                            height: 28,
+                                                            p: 0,
+                                                            borderRadius: '8px',
+                                                            '&:hover': {
+                                                                backgroundColor: 'rgba(66, 133, 244, 0.12)',
+                                                            }
+                                                        }}
+                                                        onClick={() => {
+                                                            if (quantity === 1) {
+                                                                removeFromCart(medicine._id);
+                                                                showSnackbar({ message: 'Removed from cart', severity: 'info' });
+                                                            } else {
+                                                                updateQuantity(medicine._id, quantity - 1);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <Remove sx={{ fontSize: 16 }} />
+                                                    </StyledButton>
 
-                                        }}>
-                                            <StockChip 
-                                                size="small" 
-                                                label={medicine.stock > 10 ? 'In Stock' : medicine.stock > 0 ? 'Low Stock' : 'Out of Stock'}
-                                                color={medicine.stock > 10 ? 'success' : medicine.stock > 0 ? 'warning' : 'error'}
-                                            />
-                                            <Typography 
-                                                variant="caption" 
-                                                color="text.secondary"
+                                                    <Typography
+                                                        variant="body2"
+                                                        sx={{
+                                                            minWidth: 24,
+                                                            textAlign: 'center',
+                                                            fontWeight: 600,
+                                                            fontSize: '0.875rem',
+                                                            color: 'primary.main',
+                                                            px: 0.5
+                                                        }}
+                                                    >
+                                                        {quantity}
+                                                    </Typography>
+
+                                                    <StyledButton
+                                                        variant="text"
+                                                        color="primary"
+                                                        sx={{
+                                                            minWidth: 0,
+                                                            width: 28,
+                                                            height: 28,
+                                                            p: 0,
+                                                            borderRadius: '8px',
+                                                            '&:hover': {
+                                                                backgroundColor: 'rgba(66, 133, 244, 0.12)',
+                                                            },
+                                                            '&:disabled': {
+                                                                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                                                color: 'rgba(0, 0, 0, 0.26)',
+                                                            }
+                                                        }}
+                                                        onClick={() => {
+                                                            updateQuantity(medicine._id, quantity + 1);
+                                                        }}
+                                                        disabled={quantity >= medicine.stock}
+                                                    >
+                                                        <Add sx={{ fontSize: 16 }} />
+                                                    </StyledButton>
+                                                </Box>
+                                            )}
+
+                                            <StyledButton
+                                                variant="contained"
+                                                color="primary"
+                                                fullWidth={{ xs: true, sm: false }}
+                                                sx={{
+                                                    flex: { xs: 'none', sm: 1 },
+                                                    minWidth: { sm: 120 }
+                                                }}
+                                                onClick={() => handleViewDetails(medicine._id)}
                                             >
-                                                {medicine.stock} left
-                                            </Typography>
-                                        </Box>
-                                    </CardContent>
-                                    
-                                    <CardActions 
-                                        sx={{ 
-                                            px: 2, py: 0, 
-                                            display: 'flex',
-                                            alignItems : 'end',
-                                            flexDirection: { xs: 'column', sm: 'row' }, 
-                                            gap: { xs: 1, sm: 0 } 
-                                        }}
-                                    >
-                                        <StyledButton 
-                                            variant="outlined" 
-                                            color="primary"
-                                            fullWidth
-                                            onClick={(e) => handleAddToCart(medicine, e)}
-                                        >
-                                            Add to Cart
-                                        </StyledButton>
-                                        <StyledButton 
-                                            variant="contained" 
-                                            color="primary"
-                                            fullWidth
-                                            onClick={() => handleViewDetails(medicine._id)}
-                                        >
-                                            View Details
-                                        </StyledButton>
-                                    </CardActions>
-                                </StyledCard>
-                            </Grow>
-                        </Grid>
-                    ))}
+                                                View Details
+                                            </StyledButton>
+                                        </CardActions>
+                                    </StyledCard>
+                                </Grow>
+                            </Grid>
+                        )
+                    })}
                     {medicines.length === 0 && !searchLoading && (
                         <Grid item xs={12}>
-                            <Box 
-                                display="flex" 
+                            <Box
+                                display="flex"
                                 flexDirection="column"
-                                justifyContent="center" 
-                                alignItems="center" 
+                                justifyContent="center"
+                                alignItems="center"
                                 py={8}
                                 textAlign="center"
                             >

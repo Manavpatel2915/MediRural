@@ -13,6 +13,11 @@ router.get('/' , auth , WrapAsync(async (req, res) => {
   res.status(200).json({ success: true, orders });
 }));
 
+router.get('/user', auth, WrapAsync(async (req, res) => {
+  const orders = await Order.find({ user: req.user.id }).populate('items.medicine');
+  res.status(200).json({ success: true, orders });
+}));
+
 //getting orders for suppliers based on pincode matching
 router.get('/supplier', auth, WrapAsync(async (req, res) => {
   // Check if user is a supplier

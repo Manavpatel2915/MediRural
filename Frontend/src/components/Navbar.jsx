@@ -78,19 +78,7 @@ const Navbar = () => {
 
           {/* Right: Actions */}
           <div className="flex items-center space-x-1">
-            {/* Search Icon */}
-            <button
-              className={`p-1 rounded-full transition-colors ${
-                scrolled 
-                  ? 'hover:bg-gray-100 text-gray-700' 
-                  : 'hover:bg-white/10 text-white'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="7" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </button>
+            
             
             {/* Cart Icon */}
             <Link to="/cart">

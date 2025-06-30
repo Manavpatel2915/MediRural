@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useSnackbar } from '../context/SnackbarContext';
 import {
     Box,
     Container,
@@ -65,7 +66,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
 export default function Cart() {
     const { items, removeFromCart, updateQuantity, getCartTotal, clearCart, setSubscriptionDetails } = useCart();
     const navigate = useNavigate();
-    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+    const { showSnackbar } = useSnackbar();
     const [isSubscription, setIsSubscription] = useState(false);
     const [subscriptionDuration, setSubscriptionDuration] = useState('7days');
 
@@ -88,8 +89,7 @@ export default function Cart() {
     const handleQuantityChange = (medicineId , newQuantity) => {
         if (newQuantity < 1) {
             removeFromCart(medicineId);
-            setSnackbar({
-                open: true,
+            showSnackbar({
                 message: 'Item removed from cart',
                 severity: 'info'
             });
@@ -100,8 +100,7 @@ export default function Cart() {
 
     const handleRemoveItem = (medicineId) => {
         removeFromCart(medicineId);
-        setSnackbar({
-            open: true,
+        showSnackbar({
             message: 'Item removed from cart',
             severity: 'success'
         });
@@ -113,8 +112,7 @@ export default function Cart() {
 
     const handleClearCart = () => {
         clearCart();
-        setSnackbar({
-            open: true,
+        showSnackbar({
             message: 'Cart cleared successfully',
             severity: 'success'
         });
@@ -450,20 +448,6 @@ export default function Cart() {
                     </Grid>
                 </Grid>
             </Container>
-
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={3000}
-                onClose={() => setSnackbar({ ...snackbar, open: false })}
-            >
-                <Alert 
-                    onClose={() => setSnackbar({ ...snackbar, open: false })} 
-                    severity={snackbar.severity}
-                    sx={{ width: '100%' }}
-                >
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
         </Box>
     );
 } 

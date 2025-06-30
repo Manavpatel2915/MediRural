@@ -24,6 +24,8 @@ import Revenue from './components/supplierComponets/Revenue.jsx';
 import Stats from './components/supplierComponets/Stats.jsx';
 import Home from './components/Home.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
+import { SnackbarProvider } from './context/SnackbarContext';
+import OrderHistory from './components/OrderHistory.jsx';
 // import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
 
 function App() {
@@ -39,7 +41,7 @@ function App() {
   }
   
   return (
-    
+    <SnackbarProvider>
       <CartProvider>
         <Router>
           <ScrollToTop />
@@ -54,6 +56,7 @@ function App() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/orders" element={<OrderHistory />} />
             </Route>
             <Route path='/admin' element={isAdmin ? <AdminLayout/> : <Login isAdmin={true}/>} >
               <Route index element={<Medicines/>} />
@@ -70,10 +73,9 @@ function App() {
               <Route path='stats' element={<Stats/>} />
             </Route>
           </Routes>
-            
         </Router>
-
       </CartProvider>
+    </SnackbarProvider>
   );
 }
 

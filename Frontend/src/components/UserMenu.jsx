@@ -55,6 +55,15 @@ const UserMenu = ({ scrolled = false }) => {
                 <p className="font-semibold text-gray-900">{user.name}</p>
               </div>
               <button
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate('/orders');
+                }}
+                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                My Orders
+              </button>
+              <button
                 onClick={handleLogout}
                 className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >

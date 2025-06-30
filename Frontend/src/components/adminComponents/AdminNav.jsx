@@ -9,8 +9,7 @@ const navigate = useNavigate();
 
   const navItems = [
     { to: '/admin/medicines', label: 'Medicines', icon: Package },
-    { to: '/admin/orders', label: 'Orders', icon: ShoppingCart },
-    { to: '/admin/users', label: 'Users', icon: Users }
+    { to: '/admin/orders', label: 'Orders', icon: ShoppingCart }
   ];
 
   const Link = ({ to, onClick, className, children }) => (

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
+import { useSnackbar } from '../context/SnackbarContext';
 import {
     Card,
     CardContent,
@@ -14,7 +15,9 @@ import {
     Chip,
     IconButton,
     Divider,
-    Paper
+    Paper,
+    Snackbar,
+    Alert
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { styled } from '@mui/material/styles';
@@ -86,9 +89,11 @@ export default function SingleMedicine() {
     const [medicine, setMedicine] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { addToCart } = useCart();
+    const { addToCart, items } = useCart();
     const [quantity, setQuantity] = useState(1);
     const addToCartRef = useRef(null);
+    const { showSnackbar } = useSnackbar();
+    const cartQuantity = items.find(i => i.medicine._id === medicine?._id)?.quantity || 0;
 
     useEffect(() => {
         const fetchMedicine = async () => {
@@ -114,7 +119,7 @@ export default function SingleMedicine() {
     const handleAddToCart = () => {
         if (medicine) {
             addToCart(medicine, quantity);
-            // You can add a toast notification here
+            showSnackbar({ open: true, message: 'Added to cart!', severity: 'success' });
         }
     };
 
@@ -235,39 +240,109 @@ export default function SingleMedicine() {
                                 )}
                             </Box>
 
-                            <Box sx={{ mt: 'auto', pt: 4, display: 'flex', gap: 2 }} ref={addToCartRef}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 2 }}>
+                            {/* Action Area: In Cart, Quantity Selector, Buttons */}
+                            <Box sx={{ mt: 'auto', pt: 4 }} ref={addToCartRef}>
+                                {/* In Cart Indicator */}
+                                {cartQuantity > 0 && (
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: 'primary.main',
+                                            fontWeight: 600,
+                                            mb: 1,
+                                            fontSize: '1rem',
+                                            letterSpacing: 0.2,
+                                        }}
+                                    >
+                                        In Cart: {cartQuantity}
+                                    </Typography>
+                                )}
+                                {/* Quantity Selector */}
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent : 'center',
+                                        backgroundColor: 'rgba(66, 133, 244, 0.08)',
+                                        borderRadius: '12px',
+                                        border: '1px solid rgba(66, 133, 244, 0.2)',
+                                        padding: '4px 8px',
+                                        gap: 0.5,
+                                        minWidth: 'fit-content',
+                                        mb: 2
+                                    }}
+                                >
                                     <IconButton
                                         onClick={() => setQuantity(q => Math.max(1, q - 1))}
                                         disabled={quantity <= 1}
                                         size="small"
+                                        sx={{
+                                            minWidth: 0,
+                                            width: 28,
+                                            height: 28,
+                                            p: 0,
+                                            borderRadius: '8px',
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(66, 133, 244, 0.12)',
+                                            }
+                                        }}
                                     >
-                                        <RemoveIcon />
+                                        <RemoveIcon sx={{ fontSize: 16 }} />
                                     </IconButton>
-                                    <Typography variant="h6" sx={{ minWidth: 32, textAlign: 'center' }}>{quantity}</Typography>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            minWidth: 24,
+                                            textAlign: 'center',
+                                            fontWeight: 600,
+                                            fontSize: '0.95rem',
+                                            color: 'primary.main',
+                                            px: 0.5
+                                        }}
+                                    >
+                                        {quantity}
+                                    </Typography>
                                     <IconButton
                                         onClick={() => setQuantity(q => Math.min(medicine.stock, q + 1))}
                                         disabled={quantity >= medicine.stock}
                                         size="small"
+                                        sx={{
+                                            minWidth: 0,
+                                            width: 28,
+                                            height: 28,
+                                            p: 0,
+                                            borderRadius: '8px',
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(66, 133, 244, 0.12)',
+                                            },
+                                            '&:disabled': {
+                                                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                                color: 'rgba(0, 0, 0, 0.26)',
+                                            }
+                                        }}
                                     >
-                                        <AddIcon />
+                                        <AddIcon sx={{ fontSize: 16 }} />
                                     </IconButton>
                                 </Box>
-                                <StyledButton
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={medicine.stock === 0}
-                                    onClick={handleAddToCart}
-                                >
-                                    Add to Cart
-                                </StyledButton>
-                                <StyledButton
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={handleBack}
-                                >
-                                    Back to Catalog
-                                </StyledButton>
+                                {/* Action Buttons Row */}
+                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                    <StyledButton
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={medicine.stock === 0}
+                                        onClick={handleAddToCart}
+                                        sx={{ minWidth: 120 }}
+                                    >
+                                        Add to Cart
+                                    </StyledButton>
+                                    <StyledButton
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={handleBack}
+                                    >
+                                        Back to Catalog
+                                    </StyledButton>
+                                </Box>
                             </Box>
                         </CardContent>
                     </Box>

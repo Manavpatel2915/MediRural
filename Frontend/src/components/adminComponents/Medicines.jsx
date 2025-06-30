@@ -119,19 +119,17 @@ const Medicines = () => {
             <Package />
           </div>
           <div className='flex justify-center flex-col'>
-            <h1 className='text-2xl font-bold'>Medicine Managament</h1>
+            <h1 className='text-2xl font-bold'>Medicine Management</h1>
             <p className='text-md'>Manage Your Pharmacy network</p>
           </div>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors" onClick={()=>navigate('/admin/medicines/add')}>
           <Plus className="h-4 w-4" />
-          <span onClick={()=>navigate('/admin/medicines/add')}>Add Medicine</span>
+          <span>Add Medicine</span>
         </button>
-
       </div>
 
       {/* filter */}
-
       <SearchFilterBar 
         searchTerm={searchTerm}
         selectedCategory={selectedCat} 
@@ -140,67 +138,64 @@ const Medicines = () => {
         categories={category}
       />
 
-
-      <div className='flex flex-col items-center'>
-        {medicines.map((medicine) => {
-          return (
-            <div key={medicine._id} className='flex h-28 w-full bg-white m-2 rounded-md px-4 border border-gray-400 items-center justify-between overflow-auto'>
-              <div className='flex items-center'>
-                <div className='h-16  w-16 mr-4'>
-                  <img className='h-full w-full object-cover rounded-lg' src={medicine.imageUrl} alt={medicine.name} />
-                </div>
-                <div className='flex-1 min-w-0 space-y-1'>
-
-                  <div className='flex items-center space-x-2'>
-                    <div className='text-lg font-semibold text-gray-800 truncate'>{medicine.name}</div>
-                    <div className='text-sm bg-green-200 text-green-700 rounded-lg px-2'>
-                      <span>{stockIndicator(medicine.stock)}</span>
+      {/* Table Layout */}
+      <div className="bg-white rounded-xl shadow-sm border overflow-hidden mt-6">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {medicines.map((medicine) => (
+                <tr key={medicine._id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <img className="h-12 w-12 object-cover rounded-lg border" src={medicine.imageUrl} alt={medicine.name} />
+                  </td>
+                  <td className="px-6 py-4 font-semibold text-gray-900">{medicine.name}</td>
+                  <td className="px-6 py-4 text-gray-600 text-sm max-w-xs truncate">{medicine.description}</td>
+                  <td className="px-6 py-4 font-medium text-black flex items-center gap-1">
+                    <IndianRupee className='w-3 h-3 text-black' />
+                    {medicine.price}
+                  </td>
+                  <td className="px-3 py-4">
+                    <div className={`px-2 py-1 rounded-lg text-xs font-semibold ${medicine.stock <= 0 ? 'bg-red-100 text-red-700' : medicine.stock <= 100 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-700'}`}>{medicine.stock <= 0 ? 'Out of stock' : medicine.stock <= 100 ? 'Low stock' : 'In stock'}</div>
+                    <div className="ml-2 text-xs text-gray-500">({medicine.stock})</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-block bg-gray-100 text-gray-700 rounded-lg text-xs px-2 py-0.5">{medicine.category}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex space-x-3 text-gray-600">
+                      <button className='hover:cursor-pointer hover:text-gray-900 transition-colors ease-in' onClick={()=>handleShow(medicine._id)}>
+                        <Eye className='w-5 h-5'/>
+                      </button>
+                      <button className='hover:cursor-pointer hover:text-gray-900 transition-colors ease-in' onClick={()=>handleEdit(medicine._id)}>
+                        <Edit className='w-5 h-5'/>
+                      </button>
+                      <button className='hover:cursor-pointer hover:text-gray-900 transition-colors ease-in' onClick={()=>handleDelete(medicine._id)}>
+                        <Trash2 className='w-5 h-5'/>
+                      </button>
                     </div>
-                  </div>
-
-
-                  <div className='text-sm line-clamp-1 text-gray-500'>         {medicine.description}
-                  </div>
-
-                  <div className='flex items-center py-2 space-x-3'>
-                    <div className='flex items-center'>
-                      <IndianRupee className='w-2.5 h-2.5 font-medium text-black' />
-                      <span className='text-xs font-medium text-black'>{medicine.price}</span>
-                    </div>
-
-                    <div className='flex items-center text-xs text-gray-500'>
-                      <span>Stock:</span>
-                      <span>{medicine.stock}</span>
-                    </div>
-
-                    <div className='flex items-center text-gray-700 bg-gray-100 rounded-lg text-xs px-2 py-0.5'>
-                      <span>{medicine.category}</span>
-                    </div>
-                  </div>
-
-
-                </div>
-              </div>
-              <div className='flex space-x-3 text-gray-600'>
-                <button className='hover:cursor-pointer hover:text-gray-900 transition-colors ease-in' onClick={()=>handleShow(medicine._id)}>
-                  <Eye className='w-5 h-5'/>
-                </button>
-                <button className='hover:cursor-pointer hover:text-gray-900 transition-colors ease-in' onClick={()=>handleEdit(medicine._id)}>
-                  <Edit className='w-5 h-5'/>
-                </button>
-                <button className='hover:cursor-pointer hover:text-gray-900 transition-colors ease-in' onClick={()=>handleDelete(medicine._id)}>
-                  <Trash2 className='w-5 h-5'/>
-                </button>
-                
-              </div>
-            </div>
-          )
-        })}
-
-
-
+                  </td>
+                </tr>
+              ))}
+              {medicines.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="text-center py-12 text-gray-500">No medicines found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-
     </div>
   )
 }
