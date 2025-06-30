@@ -18,15 +18,15 @@ import { useAuth } from './context/AuthContext';
 import AddMedicine from './components/adminComponents/AddMedicine.jsx';
 import UpdateMedicine from './components/adminComponents/UpdateMedicine.jsx';
 import AdminOrders from './components/adminComponents/Orders.jsx';
-import Inventory from './components/supplierComponets/Inventory.jsx';
-import SupplierOrders from './components/supplierComponets/Orders.jsx';
-import Revenue from './components/supplierComponets/Revenue.jsx';
-import Stats from './components/supplierComponets/Stats.jsx';
+import Inventory from './components/supplierComponents/Inventory.jsx';
+import SupplierOrders from './components/supplierComponents/Orders.jsx';
+import Revenue from './components/supplierComponents/Revenue.jsx';
+import Stats from './components/supplierComponents/Stats.jsx';
 import Home from './components/Home.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import { SnackbarProvider } from './context/SnackbarContext';
 import OrderHistory from './components/OrderHistory.jsx';
-// import Revenue from './components/supplierComponets/Revenue.jsx'; // TODO: Implement Revenue component
+// import Revenue from './components/supplierComponents/Revenue.jsx'; // TODO: Implement Revenue component
 
 function App() {
   const { user, isAdmin, isSupplier, loading } = useAuth();
