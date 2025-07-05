@@ -71,7 +71,10 @@ const Login = ({ onClose , isAdmin , isSupplier }) => {
       });
 
       if (response.data.success) {
-        const { user: backendUser } = response.data;
+        const { user: backendUser, token } = response.data;
+        
+        // Store the token immediately
+        localStorage.setItem('token', token);
         
         // Check if user has phone number
         if (!backendUser.phone) {
@@ -96,11 +99,14 @@ const Login = ({ onClose , isAdmin , isSupplier }) => {
 
   const handleCompleteProfile = async (phone) => {
     try {
+      const token = localStorage.getItem('token');
+      console.log('Token for complete profile:', token ? 'Present' : 'Missing');
+      
       const response = await axios.post('https://medirural.onrender.com/api/users/complete-google-profile', {
         phone
       }, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
 
@@ -113,6 +119,7 @@ const Login = ({ onClose , isAdmin , isSupplier }) => {
       }
     } catch (err) {
       console.error('Complete profile error:', err);
+      console.error('Error response:', err.response?.data);
       setError(err.response?.data?.message || err.message || 'Failed to complete profile');
     }
   };

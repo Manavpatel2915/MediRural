@@ -180,6 +180,8 @@ router.post('/google-auth', async (req, res) => {
 // Route to complete Google user profile with phone number
 router.post('/complete-google-profile', auth, async (req, res) => {
     try {
+        console.log('Complete profile request:', { body: req.body, user: req.user });
+        
         const { phone } = req.body;
         
         if (!phone) {
@@ -206,6 +208,8 @@ router.post('/complete-google-profile', auth, async (req, res) => {
 
         user.phone = phone;
         await user.save();
+
+        console.log('Profile completed successfully for user:', user._id);
 
         res.json({
             success: true,
