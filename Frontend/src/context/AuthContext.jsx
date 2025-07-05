@@ -54,40 +54,74 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (email, password) => {
-    const response = await axios.post('https://medirural.onrender.com/api/users/login', 
-      { email, password }
-    );
+  const login = async (email, password, isGoogleLogin = false) => {
+    let response;
     
-    if (response.data.success) {
-      // Store token in localStorage
-      localStorage.setItem('token', response.data.token);
-      setToken(response.data.token);
-      
-      setIsAuthenticated(true);
-      
-      // Manually fetch profile data using token
-      try {
-        const profileResponse = await axios.get('https://medirural.onrender.com/api/users/profile', {
-          headers: {
-            'Authorization': `Bearer ${response.data.token}`
-          }
-        });
+    if (isGoogleLogin) {
+      // For Google login, we already have the token from the Google auth process
+      // Just update the local state
+      const token = localStorage.getItem('token');
+      if (token) {
+        setToken(token);
+        setIsAuthenticated(true);
         
-        if (profileResponse.data.success) {
-          const userData = profileResponse.data.user;
-          setUser(userData);
-          setIsAdmin(userData.role === 'admin');
-          setIsSupplier(userData.role === 'supplier');
+        // Fetch user profile
+        try {
+          const profileResponse = await axios.get('https://medirural.onrender.com/api/users/profile', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (profileResponse.data.success) {
+            const userData = profileResponse.data.user;
+            setUser(userData);
+            setIsAdmin(userData.role === 'admin');
+            setIsSupplier(userData.role === 'supplier');
+          }
+        } catch (profileError) {
+          console.error('Profile fetch failed after Google login:', profileError);
         }
-      } catch (profileError) {
-        console.error('Profile fetch failed after login:', profileError.response?.status, profileError.response?.data);
-        // Don't throw error here, login was successful
+        
+        return { success: true };
       }
+    } else {
+      // Regular email/password login
+      response = await axios.post('https://medirural.onrender.com/api/users/login', 
+        { email, password }
+      );
       
-      return response.data;
+      if (response.data.success) {
+        // Store token in localStorage
+        localStorage.setItem('token', response.data.token);
+        setToken(response.data.token);
+        
+        setIsAuthenticated(true);
+        
+        // Manually fetch profile data using token
+        try {
+          const profileResponse = await axios.get('https://medirural.onrender.com/api/users/profile', {
+            headers: {
+              'Authorization': `Bearer ${response.data.token}`
+            }
+          });
+          
+          if (profileResponse.data.success) {
+            const userData = profileResponse.data.user;
+            setUser(userData);
+            setIsAdmin(userData.role === 'admin');
+            setIsSupplier(userData.role === 'supplier');
+          }
+        } catch (profileError) {
+          console.error('Profile fetch failed after login:', profileError.response?.status, profileError.response?.data);
+          // Don't throw error here, login was successful
+        }
+        
+        return response.data;
+      }
     }
-    throw new Error(response.data.message || 'Login failed');
+    
+    throw new Error(response?.data?.message || 'Login failed');
   };
 
   const logout = async () => {

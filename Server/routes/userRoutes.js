@@ -104,6 +104,130 @@ router.get('/logout', auth, (req, res) => {
     res.json({ success: true, message: "Logged out successfully" });
 });
 
+// Google authentication route
+router.post('/google-auth', async (req, res) => {
+    try {
+        const { idToken, userData } = req.body;
+        
+        if (!idToken || !userData) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Google authentication data"
+            });
+        }
+
+        // Check if user already exists by Google ID
+        let user = await User.findOne({ googleId: userData.googleId });
+        
+        if (!user) {
+            // Check if user exists by email
+            user = await User.findOne({ email: userData.email });
+            
+            if (user) {
+                // User exists but doesn't have Google ID, update it
+                user.googleId = userData.googleId;
+                user.profilePicture = userData.profilePicture;
+                await user.save();
+            } else {
+                // Create new user with Google data
+                user = new User({
+                    name: userData.name,
+                    email: userData.email,
+                    googleId: userData.googleId,
+                    profilePicture: userData.profilePicture,
+                    role: 'customer'
+                });
+                await user.save();
+            }
+        }
+
+        const token = jwt.sign(
+            { id: user._id, email: user.email, role: user.role }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '7d' }
+        );
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: '/'
+        });
+
+        res.json({
+            success: true,
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                phone: user.phone,
+                googleId: user.googleId
+            },
+            message: "Google authentication successful"
+        });
+    } catch (error) {
+        console.error('Google auth error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || "Google authentication failed"
+        });
+    }
+});
+
+// Route to complete Google user profile with phone number
+router.post('/complete-google-profile', auth, async (req, res) => {
+    try {
+        const { phone } = req.body;
+        
+        if (!phone) {
+            return res.status(400).json({
+                success: false,
+                message: "Phone number is required"
+            });
+        }
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        if (!user.googleId) {
+            return res.status(400).json({
+                success: false,
+                message: "This route is only for Google users"
+            });
+        }
+
+        user.phone = phone;
+        await user.save();
+
+        res.json({
+            success: true,
+            message: "Profile completed successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                phone: user.phone,
+                googleId: user.googleId
+            }
+        });
+    } catch (error) {
+        console.error('Complete profile error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || "Failed to complete profile"
+        });
+    }
+});
+
 // Protected route to get user profile and check auth status
 router.get('/profile', auth, async (req, res) => {
     try {

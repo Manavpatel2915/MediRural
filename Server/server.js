@@ -16,17 +16,16 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-    origin: ['https://medirural.vercel.app','https://medirural-1.onrender.com', 'http://localhost:5173', 'http://localhost:3000'], 
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-    exposedHeaders: ['Set-Cookie']
+    origin: true, // Allow all origins
+    credentials: true
 }));
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/medirural';
@@ -155,6 +154,8 @@ app.patch('/api/medicines/:id', async (req, res) => {
 
 // Protected medicine routes (for admin operations)
 app.use('/api/medicines', auth, medicineRoutes);
+
+
 
 // Home Route
 app.get('/', (req, res) => {

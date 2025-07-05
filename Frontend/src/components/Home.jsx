@@ -18,8 +18,12 @@ const Home = () => {
 
   useEffect(() => {
     let fetchCategories = async () => {
-      let response = await axios.get("https://medirural.onrender.com/api/medicines/categories");
-      setCategories(response.data.categories);
+      try {
+        let response = await axios.get("https://medirural.onrender.com/api/medicines/categories");
+        setCategories(response.data.categories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
     }
     fetchCategories();
   }, []);
