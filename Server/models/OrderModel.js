@@ -97,6 +97,14 @@ const orderSchema = new mongoose.Schema({
       required: function () {
         return this.isSubscription;
       }
+    },
+    status: {
+      type: String,
+      enum: ['active', 'paused', 'cancelled'],
+      default: 'active',
+      required: function () {
+        return this.isSubscription;
+      }
     }
   },
 

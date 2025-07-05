@@ -26,6 +26,7 @@ import Home from './components/Home.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import { SnackbarProvider } from './context/SnackbarContext';
 import OrderHistory from './components/OrderHistory.jsx';
+import MySubscriptions from './components/MySubscriptions.jsx';
 // import Revenue from './components/supplierComponents/Revenue.jsx'; // TODO: Implement Revenue component
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/orders" element={<OrderHistory />} />
+                    <Route path="/subscriptions" element={<MySubscriptions />} />
             </Route>
             <Route path='/admin' element={isAdmin ? <AdminLayout/> : <Login isAdmin={true}/>} >
               <Route index element={<Medicines/>} />

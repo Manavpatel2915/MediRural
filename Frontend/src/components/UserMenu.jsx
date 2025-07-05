@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Package, Repeat, LogOut, User } from 'lucide-react';
 
 const UserMenu = ({ scrolled = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,14 +60,26 @@ const UserMenu = ({ scrolled = false }) => {
                   setIsOpen(false);
                   navigate('/orders');
                 }}
-                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >
+                <Package className="w-4 h-4 mr-3" />
                 My Orders
               </button>
               <button
-                onClick={handleLogout}
-                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate('/subscriptions');
+                }}
+                className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >
+                <Repeat className="w-4 h-4 mr-3" />
+                My Subscriptions
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <LogOut className="w-4 h-4 mr-3" />
                 Sign out
               </button>
             </>

@@ -18,6 +18,15 @@ router.get('/user', auth, WrapAsync(async (req, res) => {
   res.status(200).json({ success: true, orders });
 }));
 
+// Get user's subscription orders only
+router.get('/user/subscriptions', auth, WrapAsync(async (req, res) => {
+  const subscriptions = await Order.find({ 
+    user: req.user.id, 
+    isSubscription: true 
+  }).populate('items.medicine');
+  res.status(200).json({ success: true, subscriptions });
+}));
+
 //getting orders for suppliers based on pincode matching
 router.get('/supplier', auth, WrapAsync(async (req, res) => {
   // Check if user is a supplier
@@ -269,11 +278,66 @@ router.post(
 
 //updating the order
 router.put('/:id', auth , WrapAsync(async (req, res) => {
-  const order = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const { id } = req.params;
+  const { status } = req.body;
+
+  // Find the order first
+  const order = await Order.findById(id);
+  if (!order) {
+    return res.status(404).json({
+      success: false,
+      message: "Order not found"
+    });
+  }
+
+  // Check if user owns this order or is admin/supplier
+  if (order.user.toString() !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'supplier') {
+    return res.status(403).json({
+      success: false,
+      message: "Not authorized to update this order"
+    });
+  }
+
+  // For subscription orders, validate subscription status changes
+  if (order.isSubscription && req.body.subscriptionDetails?.status) {
+    const validSubscriptionStatuses = ['active', 'paused', 'cancelled'];
+    const newSubscriptionStatus = req.body.subscriptionDetails.status;
+    
+    if (!validSubscriptionStatuses.includes(newSubscriptionStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid subscription status. Use: active, paused, or cancelled"
+      });
+    }
+
+    // If resuming a paused subscription, update next delivery date
+    if (newSubscriptionStatus === 'active' && order.subscriptionDetails?.status === 'paused') {
+      const nextDelivery = new Date();
+      if (order.subscriptionDetails?.frequency === 'weekly') {
+        nextDelivery.setDate(nextDelivery.getDate() + 7);
+      } else if (order.subscriptionDetails?.frequency === 'monthly') {
+        nextDelivery.setMonth(nextDelivery.getMonth() + 1);
+      }
+      req.body.subscriptionDetails = {
+        ...order.subscriptionDetails,
+        status: newSubscriptionStatus,
+        nextDeliveryDate: nextDelivery
+      };
+    } else {
+      // Just update the status
+      req.body.subscriptionDetails = {
+        ...order.subscriptionDetails,
+        status: newSubscriptionStatus
+      };
+    }
+  }
+
+  const updatedOrder = await Order.findByIdAndUpdate(id, req.body, { new: true });
 
   res.status(200).json({
     success: true,
-    message: "order updated successfully",
+    message: "Order updated successfully",
+    order: updatedOrder
   });
 }));
 

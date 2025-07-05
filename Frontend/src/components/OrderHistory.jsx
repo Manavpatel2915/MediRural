@@ -41,7 +41,7 @@ const OrderHistory = () => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
-        const res = await axios.get('https://medirural.onrender.com/api/orders', {
+        const res = await axios.get('https://medirural.onrender.com/api/orders/user', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrders(res.data.orders || []);
@@ -119,7 +119,7 @@ const OrderHistory = () => {
                 <div>
                   <div className="font-semibold mb-1">Shipping Address:</div>
                   <div className="text-sm text-gray-700">
-                    {order.shippingAddress?.address}, {order.shippingAddress?.city}, {order.shippingAddress?.state}, {order.shippingAddress?.pincode}
+                    {order.shipping?.address}, {order.shipping?.city}, {order.shipping?.state}, {order.shipping?.pincode}
                   </div>
                 </div>
                 {order.status === 'pending' || order.status === 'confirmed' ? (
@@ -130,6 +130,7 @@ const OrderHistory = () => {
                     Cancel Order
                   </button>
                 ) : null}
+                
               </div>
             )}
           </div>
