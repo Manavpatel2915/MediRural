@@ -39,7 +39,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 
 const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
     width: '100%',
-    height: 400,
+    height: 'auto',
     objectFit: 'cover',
     borderRadius: '20px',
     backgroundColor: '#f8f9fa',
@@ -227,7 +227,7 @@ export default function SingleMedicine() {
 
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                                     <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8fafc', borderRadius: '12px', flex: '1 1 100px' }}>
-                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                                             Category
                                         </Typography>
                                         <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -235,7 +235,7 @@ export default function SingleMedicine() {
                                         </Typography>
                                     </Paper>
                                     <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8fafc', borderRadius: '12px', flex: '1 1 100px' }}>
-                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                                             Manufacturer
                                         </Typography>
                                         <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -246,7 +246,7 @@ export default function SingleMedicine() {
 
                                 {medicine.expiryDate && (
                                     <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8fafc', borderRadius: '12px', flex: '1 1 100px' }}>
-                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                                             Expiry Date
                                         </Typography>
                                         <Typography variant="body1" sx={{ fontWeight: 500 }}>
