@@ -325,7 +325,8 @@ export default function AllMedicines() {
                                                 alignItems: 'center',
                                                 flexDirection: { xs: 'column', sm: 'row' },
                                                 gap: { xs: 1.5, sm: 0.5 },
-                                                justifyContent: 'space-between'
+                                                justifyContent: 'space-between',
+                                                alignItems: 'self-end',
                                             }}
                                         >
                                             {quantity === 0 ? (

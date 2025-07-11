@@ -157,9 +157,9 @@ export default function SingleMedicine() {
         <Box sx={{ backgroundColor: '#fafbfc', minHeight: '90vh', py: { xs: 1, md: 3 } }}>
             <Container maxWidth="lg">
                 <Box sx={{ mb: { xs: 1, md: 2 }, display: 'flex', alignItems: 'center' }}>
-                    <IconButton 
+                    <IconButton
                         onClick={handleBack}
-                        sx={{ 
+                        sx={{
                             mr: 2,
                             backgroundColor: 'white',
                             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -171,7 +171,15 @@ export default function SingleMedicine() {
                     >
                         <ArrowBackIcon />
                     </IconButton>
-                    <Typography variant="h4" component="h4" sx={{ fontWeight: 700, color: '#1a365d' }}>
+                    <Typography variant="h5"
+                        sx={{
+                            fontSize: '2.25rem',
+                            fontWeight: 900,
+                            color: '#0f172a',
+                            lineHeight: 1,
+                            letterSpacing: '-0.025em',
+
+                        }}>
                         Medicine Details
                     </Typography>
                 </Box>
@@ -182,16 +190,24 @@ export default function SingleMedicine() {
                         image={medicine.imageUrl}
                         alt={medicine.name}
                     />
-                    <Box sx={{ flex: 1, p: { xs: 2, md:2 } }}>
+                    <Box sx={{ flex: 1, p: { xs: 2, md: 2 } }}>
                         <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <Box>
-                                <Typography variant="h4" component="h2" sx={{ fontWeight: 700, mb: 2 }}>
+                                <Typography variant="h5"
+                                    sx={{
+                                        fontSize: '1.5rem',/* text-4xl (base) */
+                                        fontWeight: 800, /* font-black */
+                                        color: '#0f172a', /* text-slate-900 */
+                                        lineHeight: 1, /* leading-none */
+                                        letterSpacing: '-0.025em',
+                                        mb: 1
+                                    }}>
                                     {medicine.name}
                                 </Typography>
                                 <Typography variant="h5" color="primary" sx={{ fontWeight: 600, mb: 2 }}>
                                     ₹{medicine.price}
                                 </Typography>
-                                <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
+                                <Typography variant="body" color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
                                     {medicine.description}
                                 </Typography>
                             </Box>
@@ -200,7 +216,7 @@ export default function SingleMedicine() {
 
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                    <InfoChip 
+                                    <InfoChip
                                         label={medicine.stock > 10 ? 'In Stock' : medicine.stock > 0 ? 'Low Stock' : 'Out of Stock'}
                                         color={medicine.stock > 10 ? 'success' : medicine.stock > 0 ? 'warning' : 'error'}
                                     />
@@ -229,14 +245,14 @@ export default function SingleMedicine() {
                                 </Box>
 
                                 {medicine.expiryDate && (
-                                   <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8fafc', borderRadius: '12px', flex: '1 1 100px' }}>
-                                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                       Expiry Date
-                                   </Typography>
-                                   <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                       {new Date(medicine.expiryDate).toLocaleDateString()}
-                                   </Typography>
-                               </Paper>
+                                    <Paper elevation={0} sx={{ p: 2, backgroundColor: '#f8fafc', borderRadius: '12px', flex: '1 1 100px' }}>
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                            Expiry Date
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            {new Date(medicine.expiryDate).toLocaleDateString()}
+                                        </Typography>
+                                    </Paper>
                                 )}
                             </Box>
 
@@ -262,7 +278,7 @@ export default function SingleMedicine() {
                                     sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent : 'center',
+                                        justifyContent: 'center',
                                         backgroundColor: 'rgba(66, 133, 244, 0.08)',
                                         borderRadius: '12px',
                                         border: '1px solid rgba(66, 133, 244, 0.2)',
