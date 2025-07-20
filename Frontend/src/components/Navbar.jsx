@@ -1,176 +1,154 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import UserMenu from './UserMenu';
 import { useCart } from '../context/CartContext';
 
+const NAV_LINKS = [
+  { label: 'Home', to: '/' },
+  { label: 'Medicines', to: '/medicines' },
+  { label: 'About', to: '/about' },
+  { label: 'Contact', to: '/contact' },
+];
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const { getCartCount } = useCart();
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const navigate = useNavigate();
   const location = useLocation();
+  const navRef = useRef(null);
+  const { getCartCount } = useCart()
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const handleNav = (path) => {
+    navigate(path);
+    setIsMenuOpen(false);
   };
 
-  const isActive = (path) => location.pathname === path;
+  // Sliding indicator logic (simple)
+  useEffect(() => {
+    const activeLink = navRef.current?.querySelector('.nav-active');
+    if (activeLink) {
+      const rect = activeLink.getBoundingClientRect();
+      const containerRect = navRef.current.getBoundingClientRect();
+      setIndicatorStyle({
+        left: rect.left - containerRect.left,
+        width: rect.width,
+      });
+    }
+  }, [location.pathname]);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled 
-        ? 'bg-white shadow-md' 
-        : 'bg-blue-600'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-blue-100/40 shadow-md">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          
-          {/* Left: Navigation Links */}
-          <div className="flex items-center space-x-8">
-            {/* Hamburger Menu for Mobile */}
-            <button
-              onClick={toggleMenu}
-              className={`lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors ${scrolled ? 'text-gray-800' : 'text-white'}`}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </button>
 
-            {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center space-x-8">
-              <NavLink to="/" isActive={isActive('/')} scrolled={scrolled}>
-                Home
-              </NavLink>
-              <NavLink to="/medicines" isActive={isActive('/medicines')} scrolled={scrolled}>
-                Medicines
-              </NavLink>
-              <NavLink to="/about" isActive={isActive('/about')} scrolled={scrolled}>
-                About
-              </NavLink>
-              <NavLink to="/contact" isActive={isActive('/contact')} scrolled={scrolled}>
-                Contact
-              </NavLink>
+          {/* Logo */}
+          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => handleNav('/')}>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center shadow-md">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+              </svg>
+            </div>
+            <span className="font-black text-lg text-blue-700 tracking-tight">MediRural</span>
+          </div>
+
+          {/* Nav Links */}
+          <div className="hidden lg:flex items-center relative " ref={navRef}>
+            <div className="flex items-center px-1 py-1 rounded-full backdrop-blur-md border border-blue-100/40 shadow-sm relative bg-white/90">
+              <div
+                className="absolute top-1 h-7 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-300 ease-in-out z-0"
+                style={{ left: indicatorStyle.left, width: indicatorStyle.width }}
+              />
+              {NAV_LINKS.map((link) => (
+                <button
+                  key={link.to}
+                  onClick={() => handleNav(link.to)}
+                  className={`relative z-10 px-4 py-1 rounded-full font-medium text-sm mx-1 transition-colors duration-150  ${
+                    location.pathname === link.to
+                      ? 'text-white nav-active'
+                      : 'text-blue-700 hover:text-blue-900'
+                  }`}
+                  aria-current={location.pathname === link.to ? 'page' : undefined}
+                  style={{ background: 'none' }}
+                >
+                  {link.label}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Center: Logo */}
-          <div className="absolute left-1/2 transform -translate-x-1/2">
-            <span 
-              className={`font-bold text-2xl tracking-wider cursor-pointer transition-colors ${
-                scrolled ? 'text-gray-800' : 'text-white'
-              }`}
-              onClick={() => navigate("/")}
-            >
-              MediRural
-            </span>
-          </div>
-
-          {/* Right: Actions */}
-          <div className="flex items-center space-x-1">
-            
-            
-            {/* Cart Icon */}
-            <Link to="/cart">
-              <div
-                className={`relative p-2 rounded-lg transition-colors ${
-                  scrolled 
-                    ? 'hover:bg-gray-100 text-gray-700' 
-                    : 'hover:bg-white/10 text-white'
-                }`}
+          {/* Cart & User */}
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <button
+                onClick={() => handleNav('/cart')}
+                className="p-2 rounded-full text-blue-700 hover:bg-blue-50 transition-colors"
+                aria-label="Cart"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <circle cx="9" cy="21" r="1" />
                   <circle cx="20" cy="21" r="1" />
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                 </svg>
-                {/* Cart Badge */}
                 {getCartCount() > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-emerald-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold text-[10px]">
                     {getCartCount()}
                   </span>
                 )}
-              </div>
-            </Link>
-            
-            {/* User Menu */}
-            <UserMenu scrolled={scrolled} />
+              </button>
+            </div>
+            <div className="ml-2">
+              <UserMenu />
+            </div>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="lg:hidden p-2 rounded-lg text-blue-700 hover:bg-blue-50 transition-colors"
+              aria-label="Menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                {isMenuOpen ? (
+                  <path d="M18 6L6 18M6 6l12 12" />
+                ) : (
+                  <>
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                  </>
+                )}
+              </svg>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden bg-white shadow-lg border-t border-gray-200">
-          <div className="px-4 py-6 space-y-4">
-            <MobileNavLink to="/" isActive={isActive('/')} onClick={toggleMenu}>
-              Home
-            </MobileNavLink>
-            <MobileNavLink to="/medicines" isActive={isActive('/medicines')} onClick={toggleMenu}>
-              Medicines
-            </MobileNavLink>
-            <MobileNavLink to="/about" isActive={isActive('/about')} onClick={toggleMenu}>
-              About
-            </MobileNavLink>
-            <MobileNavLink to="/contact" isActive={isActive('/contact')} onClick={toggleMenu}>
-              Contact
-            </MobileNavLink>
+      <div className={`lg:hidden transition-all duration-200 ${
+        isMenuOpen ? 'opacity-100 translate-y-0 max-h-96' : 'opacity-0 -translate-y-2 max-h-0 overflow-hidden'
+      }`}>
+        <div className="bg-white/95 backdrop-blur-xl border-t border-blue-100/40 shadow-md">
+          <div className="px-6 py-4 space-y-1">
+            {NAV_LINKS.map(link => (
+              <button
+                key={link.to}
+                onClick={() => handleNav(link.to)}
+                className="w-full text-left"
+              >
+                <div className={`py-2 px-3 rounded-lg font-medium text-base transition-colors duration-150 ${
+                  location.pathname === link.to
+                    ? 'bg-gradient-to-r from-blue-500 to-emerald-500 text-white shadow'
+                    : 'text-blue-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-emerald-500'
+                }`}
+                  aria-current={location.pathname === link.to ? 'page' : undefined}
+                >
+                  {link.label}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
-      )}
-    </nav>
-  )
-}
-
-// NavLink Component for Desktop with animated underline
-const NavLink = ({ to, children, isActive, scrolled }) => (
-  <Link to={to}>
-    <div
-      className={`relative font-medium transition-colors ${
-        scrolled ? 'text-gray-700' : 'text-white'
-      }`}
-    >
-      {children}
-      {/* Animated underline */}
-      <div className="absolute -bottom-1 left-0 right-0 h-0.5">
-        <div 
-          className={`h-full rounded-full transition-all duration-300 ease-out ${
-            scrolled ? 'bg-blue-600' : 'bg-white'
-          }`}
-          style={{
-            transform: isActive ? 'scaleX(1)' : 'scaleX(0)',
-            transformOrigin: 'left'
-          }}
-        />
       </div>
-    </div>
-  </Link>
-);
+    </nav>
+  );
+};
 
-// Mobile NavLink Component
-const MobileNavLink = ({ to, children, isActive, onClick }) => (
-  <Link to={to} onClick={onClick}>
-    <div
-      className={`py-3 px-4 rounded-lg font-medium transition-colors ${
-        isActive 
-          ? 'bg-blue-600 text-white' 
-          : 'text-gray-700 hover:bg-gray-100'
-      }`}
-    >
-      {children}
-    </div>
-  </Link>
-);
-
-export default Navbar
-
+export default Navbar;

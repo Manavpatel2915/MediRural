@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Package, Repeat, LogOut, User } from 'lucide-react';
 
-const UserMenu = ({ scrolled = false }) => {
+const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -35,13 +35,12 @@ const UserMenu = ({ scrolled = false }) => {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`p-2 rounded-lg transition-colors ${
-          scrolled 
-            ? 'hover:bg-gray-100 text-gray-700' 
-            : 'hover:bg-white/10 text-white'
+        className={`p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+          'hover:bg-blue-50 text-blue-700'
         }`}
+        aria-label="User menu"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" fill="none" stroke="#2563eb" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
           <circle cx="12" cy="8" r="4" />
           <path d="M4 20c0-4 4-7 8-7s8 3 8 7" />
         </svg>

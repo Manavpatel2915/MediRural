@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes');
 const medicineRoutes = require('./routes/medicineRoutes');
 const cookieParser = require('cookie-parser');
 const auth = require('./middlewares/auth');
+const cronRoutes = require('./routes/cron');
 // Load environment variables
 dotenv.config();
 
@@ -47,7 +48,7 @@ mongoose.connect(MONGODB_URI)
 //routes definations
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
-
+app.use('/api/cron', cronRoutes);
 // Public route for getting all medicines
 app.get('/api/medicines/categories', async (req, res) => {
     try {

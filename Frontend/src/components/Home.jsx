@@ -59,10 +59,10 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-emerald-50/30 overflow-hidden">
       {/* Hero Section (Left only, minimal animation) */}
-      <section className="relative min-h-screen flex items-center">
+      <section className="relative min-h-screen flex ">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-emerald-600/10 rounded-3xl"></div>
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-10">
-          <div className="space-y-8">
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+          <div className="space-y-4">
             {/* Badge */}
             <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200/50 shadow-lg">
               <Sparkles className="h-4 w-4 text-blue-600 mr-2" />
@@ -80,7 +80,7 @@ const Home = () => {
             {/* Search Bar */}
             <div className="relative max-w-xl group">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-emerald-600 rounded-3xl blur opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
-              <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl">
+              <div className="relative bg-white/90 backdrop-blur-xl rounded-full border border-white/20 shadow-xl">
                 <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
                   <Search className="h-6 w-6 text-slate-400" />
                 </div>
@@ -89,10 +89,10 @@ const Home = () => {
                   value={searchInput}
                   onChange={e => setSearchInput(e.target.value)}
                   placeholder="Search medicines, supplements, health products..."
-                  className="w-full pl-16 pr-6 py-5 bg-transparent text-slate-700 placeholder-slate-400 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
+                  className="w-full pl-16 pr-6 py-5 bg-transparent text-slate-700 placeholder-slate-400 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
                 />
                 <button
-                  className="absolute right-2 top-2 bottom-2 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  className="absolute right-2 top-2 bottom-2 px-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
                   onClick={() => {
                     if (searchInput.trim()) {
                       navigate('/medicines', { state: { search: searchInput.trim(), category: selectedCategory } });
@@ -107,7 +107,7 @@ const Home = () => {
             </div>
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="group relative bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white px-10 py-5 rounded-3xl font-bold shadow-2xl hover:shadow-blue-500/25 transform hover:-translate-y-2 transition-all duration-500 overflow-hidden">
+              <button className="group relative bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white px-10 py-5 rounded-full font-bold shadow-xl hover:shadow-blue-500/25 transform hover:-translate-y-1 transition-all duration-500 overflow-hidden">
                 <span className="relative flex items-center justify-center" onClick={() => {
                   if (searchInput.trim()) {
                     navigate('/medicines', { state: { search: searchInput.trim(), category: selectedCategory } });
@@ -121,7 +121,7 @@ const Home = () => {
               </button>
             </div>
             {/* Trust Indicators */}
-            <div className="flex flex-wrap items-center gap-8 pt-6">
+            <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center space-x-2">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Star key={i} className="h-6 w-6 text-yellow-400 fill-current drop-shadow-sm" />
